@@ -1,0 +1,22 @@
+print("abc"); // this is a comment
+int a = 5;
+a += 3;
+
+StringLiteral : print
+LParen : 
+DoubleQuote : 
+StringLiteral : abc
+DoubleQuote : 
+RParen : 
+Semicolon : 
+Comment : 
+StringLiteral : int
+StringLiteral : a
+Equal : 
+Number : 5
+Semicolon : 
+StringLiteral : a
+OperatorPlus : 
+Equal : 
+Number : 3
+Semicolon : 
