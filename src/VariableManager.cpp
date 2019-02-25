@@ -1,4 +1,4 @@
-#include "VariableManager.hpp"
+#include "VariableManager.h"
 
 bool VariableManager::create(std::string name, int value)
 {

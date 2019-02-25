@@ -1,21 +1,26 @@
 #include <string>
 #include <iostream>
+#include <fstream>
+#include <streambuf>
 
-#include "Scanner.hpp"
+#include "Scanner.h"
+#include "Timer.h"
 
 int main()
 {
-    std::string test = "print(\"ab\nc\"); // this is a comment\nint a = 5;\na += 3;\nchar c = 'd';";
-    std::cout<<test<<std::endl;
-    Scanner sc(test);
+    Scanner sc("test2.csc");
 
     Token t = sc.nextToken();
 
-    while (t != Token::Type::End)
+    Timer tim;
+    tim.restart();
+    while (t != Token::Type::End && t != Token::Type::UnexpectedEnd && t != Token::Type::Unexpected)
     {
         std::cout<<t.name()<<" : "<<t.value()<<std::endl;
         t = sc.nextToken();
     }
-
+    tim.stop();
+    auto elapsed = tim.elapsed<std::chrono::nanoseconds>();
+    std::cout<<elapsed.count()<<"ns elapsed"<<std::endl;
     return 0;
 }

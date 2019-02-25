@@ -1,5 +1,5 @@
-#ifndef VARIABLEMANAGER_HPP
-#define VARIABLEMANAGER_HPP
+#ifndef VARIABLEMANAGER_H
+#define VARIABLEMANAGER_H
 
 #include <string>
 #include <map>
@@ -99,4 +99,4 @@ public:
     void leaveScope();
 };
 
-#endif //VARIABLE_MANAGER
+#endif // VARIABLEMANAGER_H

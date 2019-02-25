@@ -1,4 +1,4 @@
-#include "Token.hpp"
+#include "Token.h"
 
 Token::Token(Token::Type t, std::string value) :
     m_type(t),

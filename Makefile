@@ -6,7 +6,7 @@ LIBS =
 INCLUDEDIRS = include
 
 SOURCEFILES = main.cpp Scanner.cpp VariableManager.cpp Token.cpp
-HEADERFILES = Token.hpp Scanner.hpp VariableManager.hpp
+HEADERFILES = Token.h Scanner.h VariableManager.h Queue.h Timer.h
 
 SOURCEDIR = src
 HEADERDIR = include
@@ -23,7 +23,8 @@ LIBRARIES=$(patsubst %, -L%,$(LIBS))
 INCLUDE=$(patsubst %,-I%,$(INCLUDEDIRS))
 
 
-all: release debug
+all: release
+all: debug
 
 release: CXXFLAGS += -O3
 release: TARGETFILES = $(BINDIR)/Release/$(TARGET)
