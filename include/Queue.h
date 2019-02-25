@@ -1,6 +1,8 @@
 #ifndef QUEUE_H
 #define QUEUE_H
 
+#include <mutex>
+
 template <typename T>
 class Queue
 {
@@ -13,6 +15,7 @@ public:
 
     Queue& operator<<(T &value)
     {
+        std::lock_guard<std::mutex> guard(m_mutex);
         if (last)
         {
             last->append(value);
@@ -29,6 +32,7 @@ public:
 
     T get()
     {
+        std::lock_guard<std::mutex> guard(m_mutex);
         if (first)
         {
             T val = first->value;
@@ -91,6 +95,7 @@ private:
     Node* first;
     Node* last;
     int len;
+    std::mutex m_mutex;
 };
 
 #endif // QUEUE_H

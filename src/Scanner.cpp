@@ -123,18 +123,18 @@ Token Scanner::nextToken()
         if ((m_char) == '/')
         {
             gotoNextLine();
-            return Token(Token::Type::Comment);
+            return nextToken();
         }
         if (m_char == '*')
         {
             gotoCommentEnd();
-            return Token(Token::Type::Comment);
+            return nextToken();
         }
         return Token(Token::Type::OperatorDiv);
         break;
     case '#':
         gotoNextLine();
-        return Token(Token::Type::Comment);
+        return nextToken();
         break;
     case '(':
         nextChar();

@@ -50,7 +50,6 @@ private:
     inline void skipSpaces()
     {
         while (isspace(m_char))
-//        while (m_char == ' ' || (m_char) == '\t' || (m_char) == '\n' || (m_char) == '\r')
         {
             nextChar();
         }
@@ -62,8 +61,8 @@ private:
         {
             if (m_buffer.length() < 10)
             {
-                char c;
-                while (m_buffer.length() < 40 && m_inStream.get(c))
+                char c = 0;
+                while ((m_buffer.length() < 40) && (m_inStream.get(c)))
                 {
                     m_buffer<<c;
                 }
