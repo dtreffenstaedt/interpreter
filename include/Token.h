@@ -10,17 +10,20 @@ static const std::wstring TokenTypeStr[] =
     L"KeywordFor",
     L"KeywordWhile",
     L"KeywordDo",
-    L"KeywordInteger",
-    L"KeywordFloat",
-    L"KeywordBoolean",
+    L"KeywordQuantity",
+    L"KeywordNumber",
+    L"KeywordBool",
     L"KeywordString",
-    L"KeywordCharacter",
+    L"KeywordChar",
     L"KeywordTrue",
     L"KeywordFalse",
     L"KeywordImport",
     L"KeywordExport",
     L"KeywordVoid",
     L"KeywordReturn",
+    L"KeywordAnd", // AND
+    L"KeywordOr", // OR
+    L"KeywordNot", // NOT
     L"String",  // alphanumerical text
     L"Character",
     L"Literal",
@@ -40,18 +43,6 @@ static const std::wstring TokenTypeStr[] =
     L"Comma", // ,
     L"Period", // .
     L"OperatorScopeResolution", // ::
-    L"OperatorAnd", // &&
-    L"OperatorOr", // ||
-    L"OperatorNot", // !
-    L"OperatorBitAND", // &
-    L"OperatorBitOR", // |
-    L"OperatorBitXOR", // ^
-    L"OperatorAssignOR", // |
-    L"OperatorAssignXOR", // ^=
-    L"OperatorAssignAND", // &=
-    L"OperatorBitNOT", // ~
-    L"OperatorLShift", // <<
-    L"OperatorRShift", // >>
     L"OperatorModulo", // %
     L"OperatorAssign", // =
     L"OperatorAddAssign", // +=
@@ -67,15 +58,14 @@ static const std::wstring TokenTypeStr[] =
     L"OperatorIncrement", // ++
     L"OperatorDecrement", // --
     L"Comment", // //
-    L"Number", // integer
-    L"Float", // floating point number
+    L"Number", // numeric value
     L"Unknown",
     L"UnexpectedEnd",
     L"Unexpected",
     L"End" // End of Input
 };
 
-static constexpr uint8_t KeywordStrLen = 16;
+static constexpr uint8_t KeywordStrLen = 19;
 
 static const std::wstring KeywordStr[] =
 {
@@ -84,8 +74,8 @@ static const std::wstring KeywordStr[] =
     L"for",
     L"while",
     L"do",
-    L"int",
-    L"float",
+    L"Quantity",
+    L"Number",
     L"bool",
     L"String",
     L"char",
@@ -94,7 +84,10 @@ static const std::wstring KeywordStr[] =
     L"import",
     L"export",
     L"void",
-    L"return"
+    L"return",
+    L"AND",
+    L"OR",
+    L"NOT"
 };  
     
 class Token
@@ -102,74 +95,64 @@ class Token
 public:
     enum class Type
     {
-        KeywordIf,
-        KeywordElse,
-        KeywordFor,
-        KeywordWhile,
-        KeywordDo,
-        KeywordInteger,
-        KeywordFloat,
-        KeywordBoolean,
-        KeywordString,
-        KeywordCharacter,
-        KeywordTrue,
-        KeywordFalse,
-        KeywordImport,
-        KeywordExport,
-        KeywordVoid,
-        KeywordReturn,
-        String,  // alphanumerical text
-        Character,
-        Literal,
-        OperatorPlus, // +
-        OperatorMinus, // -
-        OperatorMul, // *
-        OperatorDiv, // /
-        OperatorExp, // ^
-        LParen, // (
-        RParen, // )
-        LBrace, // {
-        RBrace, // }
-        LBracket, // [
-        RBracket, // ]
-        Semicolon, // ;
-        Colon, // :
-        Comma, // ,
-        Period, // .
-        OperatorScopeResolution, // ::
-        OperatorAnd, // &&
-        OperatorOr, // ||
-        OperatorNot, // !
-        OperatorBitAND, // &
-        OperatorBitOR, // |
-        OperatorBitXOR, // ^
-        OperatorAssignOR, // |
-        OperatorAssignXOR, // ^=
-        OperatorAssignAND, // &=
-        OperatorBitNOT, // ~
-        OperatorLShift, // <<
-        OperatorRShift, // >>
-        OperatorModulo, // %
-        OperatorAssign, // =
-        OperatorAddAssign, // +=
-        OperatorSubAssign, // -=
-        OperatorMultAssign, // *=
-        OperatorDivAssign, // /=
-        OperatorNotEqual, // !=
-        OperatorEqual, // ==
-        OperatorGreaterThan, // >
-        OperatorLessThan, // <
-        OperatorGreaterEqual, // >=
-        OperatorLessEqual, // <=
-        OperatorIncrement, // ++
-        OperatorDecrement, // --
-        Comment, // //
-        Number, // integer
-        Float, // floating point number
-        Unknown,
-        UnexpectedEnd,
-        Unexpected,
-        End // End of Input
+    KeywordIf,
+    KeywordElse,
+    KeywordFor,
+    KeywordWhile,
+    KeywordDo,
+    KeywordQuantity,
+    KeywordNumber,
+    KeywordBool,
+    KeywordString,
+    KeywordChar,
+    KeywordTrue,
+    KeywordFalse,
+    KeywordImport,
+    KeywordExport,
+    KeywordVoid,
+    KeywordReturn,
+    KeywordAnd, // AND
+    KeywordOr, // OR
+    KeywordNot, // NOT
+    String,  // alphanumerical text
+    Character,
+    Literal,
+    OperatorPlus, // +
+    OperatorMinus, // -
+    OperatorMul, // *
+    OperatorDiv, // /
+    OperatorExp, // ^
+    LParen, // (
+    RParen, // )
+    LBrace, // {
+    RBrace, // }
+    LBracket, // [
+    RBracket, // ]
+    Semicolon, // ;
+    Colon, // :
+    Comma, // ,
+    Period, // .
+    OperatorScopeResolution, // ::
+    OperatorModulo, // %
+    OperatorAssign, // =
+    OperatorAddAssign, // +=
+    OperatorSubAssign, // -=
+    OperatorMultAssign, // *=
+    OperatorDivAssign, // /=
+    OperatorNotEqual, // !=
+    OperatorEqual, // ==
+    OperatorGreaterThan, // >
+    OperatorLessThan, // <
+    OperatorGreaterEqual, // >=
+    OperatorLessEqual, // <=
+    OperatorIncrement, // ++
+    OperatorDecrement, // --
+    Comment, // //
+    Number, // numeric value
+    Unknown,
+    UnexpectedEnd,
+    Unexpected,
+    End // End of Input
     };
 
 private:
@@ -179,7 +162,7 @@ private:
 public:
     Token(Type t, std::wstring value);
 
-    Token(Type t);
+    Token(Type t = Token::Type::End);
 
     Type type() const;
 

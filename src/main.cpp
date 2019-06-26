@@ -6,22 +6,38 @@
 #include "Scanner.h"
 #include "Timer.h"
 
-int main()
+int main(int argc, char* argv[])
 {   
     std::setlocale(LC_ALL, "en_US.UTF8");
-    Scanner sc("test2.csc");
+    std::string file = "test2.csc";
+
+    if (argc == 2)
+    {
+        file = argv[1];
+    }
+    std::wcout<<"opening "<<file.c_str()<<"\n";
+    Scanner sc(file.c_str());
 
     Token t = sc.nextToken();
+
+    Queue<Token> queue;
 
     Timer tim;
     tim.restart();
     while (t != Token::Type::End && t != Token::Type::UnexpectedEnd && t != Token::Type::Unexpected)
     {
-        std::wcout<<t.name()<<" : "<<t.value()<<"\n";
+        queue<<t;
         t = sc.nextToken();
     }
-    tim.stop();
+    queue<<t;
     auto elapsed = tim.elapsed<std::chrono::nanoseconds>();
-    std::cout<<elapsed.count()<<"ns elapsed\n";
+    tim.stop();
+
+    while (!queue.empty())
+    {
+        t = queue.get();
+        std::wcout<<t.name()<<" : "<<t.value()<<"\n";
+    }
+    std::wcout<<elapsed.count()<<"ns elapsed\n";
     return 0;
 }

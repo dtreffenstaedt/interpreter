@@ -67,44 +67,7 @@ Token Scanner::nextToken()
         break;
     case '^':
         nextChar();
-        if ((m_char) == '=')
-        {
-            nextChar();
-            return Token(Token::Type::OperatorAssignXOR);
-        }
-        return Token(Token::Type::OperatorBitXOR);
-        break;
-    case '&':
-        nextChar();
-        if (m_char == '&')
-        {
-            nextChar();
-            return Token(Token::Type::OperatorAnd);
-        }
-        if ((m_char) == '=')
-        {
-            nextChar();
-            return Token(Token::Type::OperatorAssignAND);
-        }
-        return Token(Token::Type::OperatorBitAND);
-        break;
-    case '|':
-        nextChar();
-        if (m_char == '|')
-        {
-            nextChar();
-            return Token(Token::Type::OperatorOr);
-        }
-        if ((m_char) == '=')
-        {
-            nextChar();
-            return Token(Token::Type::OperatorAssignOR);
-        }
-        return Token(Token::Type::OperatorBitOR);
-        break;
-    case '~':
-        nextChar();
-        return Token(Token::Type::OperatorBitNOT);
+        return Token(Token::Type::OperatorExp);
         break;
     case '!':
         nextChar();
@@ -113,7 +76,6 @@ Token Scanner::nextToken()
             nextChar();
             return Token(Token::Type::OperatorNotEqual);
         }
-        return Token(Token::Type::OperatorNot);
         break;
     case '/':
         nextChar();
@@ -199,11 +161,6 @@ Token Scanner::nextToken()
             nextChar();
             return Token(Token::Type::OperatorLessEqual);
         }
-        if ((m_char) == '<')
-        {
-            nextChar();
-            return Token(Token::Type::OperatorLShift);
-        }
         return Token(Token::Type::OperatorLessThan);
         break;
     case '>':
@@ -212,11 +169,6 @@ Token Scanner::nextToken()
         {
             nextChar();
             return Token(Token::Type::OperatorGreaterEqual);
-        }
-        if ((m_char) == '>')
-        {
-            nextChar();
-            return Token(Token::Type::OperatorRShift);
         }
         return Token(Token::Type::OperatorGreaterThan);
         break;
@@ -254,8 +206,8 @@ Token Scanner::nextToken()
         nextChar();
         if ((m_char) != '\'')
         {
-            nextChar();
-            return Token(Token::Type::Unexpected);
+            buf = m_char;
+            return Token(Token::Type::Unexpected, buf);
         }
         nextChar();
         return Token(Token::Type::Character, buf);
@@ -300,10 +252,6 @@ Token Scanner::nextToken()
             }
             buf += (m_char);
             nextChar();
-        }
-        if (isFloat)
-        {
-            return Token(Token::Type::Float, buf);
         }
         return Token(Token::Type::Number, buf);
     }
