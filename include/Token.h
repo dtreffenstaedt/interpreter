@@ -3,7 +3,7 @@
 
 #include <string>
 
-static const std::string TokenTypeStr[] =
+static const std::wstring TokenTypeStr[] =
 {
     "KeywordIf",
     "KeywordElse",
@@ -174,22 +174,22 @@ public:
 
 private:
     Type m_type;
-    std::string m_value;
+    std::wstring m_value;
 
 public:
-    Token(Type t, std::string value);
+    Token(Type t, std::wstring value);
 
     Token(Type t);
 
     Type type() const;
 
-    std::string value() const;
+    std::wstring value() const;
 
     int toInt() const;
 
     float toFloat() const;
 
-    std::string name() const;
+    std::wstring name() const;
 
     bool operator==(Token &other) const;
 

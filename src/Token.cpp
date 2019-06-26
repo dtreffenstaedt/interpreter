@@ -1,6 +1,6 @@
 #include "Token.h"
 
-Token::Token(Token::Type t, std::string value) :
+Token::Token(Token::Type t, std::wstring value) :
     m_type(std::move(t)),
     m_value(std::move(value))
 {}
@@ -14,7 +14,7 @@ Token::Type Token::type() const
     return m_type;
 }
 
-std::string Token::value() const
+std::wstring Token::value() const
 {
     return m_value;
 }
@@ -29,7 +29,7 @@ float Token::toFloat() const
     return std::stof(m_value);
 }
 
-std::string Token::name() const
+std::wstring Token::name() const
 {
     return TokenTypeStr[(int) m_type];
 }
