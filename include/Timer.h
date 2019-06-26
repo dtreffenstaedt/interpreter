@@ -30,6 +30,14 @@ public:
     {
         return std::chrono::duration_cast<T>(m_elapsed);
     }
+
+    template <typename T>
+    double count()
+    {
+        stop();
+        auto el = elapsed<T>();
+        return el.count();
+    }
 };
 
 #endif // TIMER_H

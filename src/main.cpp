@@ -30,7 +30,7 @@ int main(int argc, char* argv[])
         t = sc.nextToken();
     }
     queue<<t;
-    auto elapsed = tim.elapsed<std::chrono::nanoseconds>();
+    auto elapsed = tim.count<std::chrono::nanoseconds>();
     tim.stop();
 
     while (!queue.empty())
@@ -38,6 +38,6 @@ int main(int argc, char* argv[])
         t = queue.get();
         std::wcout<<t.name()<<" : "<<t.value()<<"\n";
     }
-    std::wcout<<elapsed.count()<<"ns elapsed\n";
+    std::wcout<<elapsed<<"ns elapsed\n";
     return 0;
 }
