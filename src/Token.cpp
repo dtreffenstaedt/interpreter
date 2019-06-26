@@ -1,8 +1,8 @@
 #include "Token.h"
 
 Token::Token(Token::Type t, std::string value) :
-    m_type(t),
-    m_value(value)
+    m_type(std::move(t)),
+    m_value(std::move(value))
 {}
 
 Token::Token(Token::Type t) :

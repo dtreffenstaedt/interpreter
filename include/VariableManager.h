@@ -14,16 +14,19 @@ public:
             Integer,
             String,
             Float,
-            Boolean
+            Boolean,
+            Character
         } type;
 
         std::string name;
 
         int t_int;
         std::string t_str;
+        char t_char;
         float t_float;
         bool t_bool;
     };
+
 private:
     class Scope
     {
