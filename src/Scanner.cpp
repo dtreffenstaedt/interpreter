@@ -1,9 +1,10 @@
 #include "../include/Scanner.h"
 #include <iostream>
 
-Scanner::Scanner(const char* input) :
+Scanner::Scanner(const wchar_t* input) :
     m_char(EOF),
-    m_eof(false)
+    m_eof(false),
+    m_locale("C.utf8")
 {
     m_inStream.open(input);
     if (m_inStream)
@@ -258,9 +259,9 @@ Token Scanner::nextToken()
         nextChar();
         return Token(Token::Type::Character, buf);
     }
-    if (isalpha(m_char))
+    if (isalpha(m_char, m_locale))
     {
-        while (isalnum(m_char) || (m_char) == '_')
+        while (isalnum(m_char, m_locale) || (m_char) == '_')
         {
             if (atEnd())
             {
@@ -278,10 +279,10 @@ Token Scanner::nextToken()
         }
         return Token(Token::Type::Literal, buf);
     }
-    if (isdigit(m_char))
+    if (isdigit(m_char, m_locale))
     {
         bool isFloat = false;
-        while (isdigit(m_char) || (m_char) == '.')
+        while (isdigit(m_char, m_locale) || (m_char) == '.')
         {
             if (atEnd())
             {
