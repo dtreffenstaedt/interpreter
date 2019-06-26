@@ -5,100 +5,100 @@
 
 static const std::wstring TokenTypeStr[] =
 {
-    U"KeywordIf",
-    U"KeywordElse",
-    U"KeywordFor",
-    U"KeywordWhile",
-    U"KeywordDo",
-    U"KeywordInteger",
-    U"KeywordFloat",
-    U"KeywordBoolean",
-    U"KeywordString",
-    U"KeywordCharacter",
-    U"KeywordTrue",
-    U"KeywordFalse",
-    U"KeywordImport",
-    U"KeywordExport",
-    U"KeywordVoid",
-    U"KeywordReturn",
-    U"String",  // alphanumerical text
-    U"Character",
-    U"Literal",
-    U"OperatorPlus", // +
-    U"OperatorMinus", // -
-    U"OperatorMul", // *
-    U"OperatorDiv", // /
-    U"OperatorExp", // ^
-    U"LParen", // (
-    U"RParen", // )
-    U"LBrace", // {
-    U"RBrace", // }
-    U"LBracket", // [
-    U"RBracket", // ]
-    U"Semicolon", // ;
-    U"Colon", // :
-    U"Comma", // ,
-    U"Period", // .
-    U"OperatorScopeResolution", // ::
-    U"OperatorAnd", // &&
-    U"OperatorOr", // ||
-    U"OperatorNot", // !
-    U"OperatorBitAND", // &
-    U"OperatorBitOR", // |
-    U"OperatorBitXOR", // ^
-    U"OperatorAssignOR", // |
-    U"OperatorAssignXOR", // ^=
-    U"OperatorAssignAND", // &=
-    U"OperatorBitNOT", // ~
-    U"OperatorLShift", // <<
-    U"OperatorRShift", // >>
-    U"OperatorModulo", // %
-    U"OperatorAssign", // =
-    U"OperatorAddAssign", // +=
-    U"OperatorSubAssign", // -=
-    U"OperatorMultAssign", // *=
-    U"OperatorDivAssign", // /=
-    U"OperatorNotEqual", // !=
-    U"OperatorEqual", // ==
-    U"OperatorGreaterThan", // >
-    U"OperatorLessThan", // <
-    U"OperatorGreaterEqual", // >=
-    U"OperatorLessEqual", // <=
-    U"OperatorIncrement", // ++
-    U"OperatorDecrement", // --
-    U"Comment", // //
-    U"Number", // integer
-    U"Float", // floating point number
-    U"Unknown",
-    U"UnexpectedEnd",
-    U"Unexpected",
-    U"End" // End of Input
+    L"KeywordIf",
+    L"KeywordElse",
+    L"KeywordFor",
+    L"KeywordWhile",
+    L"KeywordDo",
+    L"KeywordInteger",
+    L"KeywordFloat",
+    L"KeywordBoolean",
+    L"KeywordString",
+    L"KeywordCharacter",
+    L"KeywordTrue",
+    L"KeywordFalse",
+    L"KeywordImport",
+    L"KeywordExport",
+    L"KeywordVoid",
+    L"KeywordReturn",
+    L"String",  // alphanumerical text
+    L"Character",
+    L"Literal",
+    L"OperatorPlus", // +
+    L"OperatorMinus", // -
+    L"OperatorMul", // *
+    L"OperatorDiv", // /
+    L"OperatorExp", // ^
+    L"LParen", // (
+    L"RParen", // )
+    L"LBrace", // {
+    L"RBrace", // }
+    L"LBracket", // [
+    L"RBracket", // ]
+    L"Semicolon", // ;
+    L"Colon", // :
+    L"Comma", // ,
+    L"Period", // .
+    L"OperatorScopeResolution", // ::
+    L"OperatorAnd", // &&
+    L"OperatorOr", // ||
+    L"OperatorNot", // !
+    L"OperatorBitAND", // &
+    L"OperatorBitOR", // |
+    L"OperatorBitXOR", // ^
+    L"OperatorAssignOR", // |
+    L"OperatorAssignXOR", // ^=
+    L"OperatorAssignAND", // &=
+    L"OperatorBitNOT", // ~
+    L"OperatorLShift", // <<
+    L"OperatorRShift", // >>
+    L"OperatorModulo", // %
+    L"OperatorAssign", // =
+    L"OperatorAddAssign", // +=
+    L"OperatorSubAssign", // -=
+    L"OperatorMultAssign", // *=
+    L"OperatorDivAssign", // /=
+    L"OperatorNotEqual", // !=
+    L"OperatorEqual", // ==
+    L"OperatorGreaterThan", // >
+    L"OperatorLessThan", // <
+    L"OperatorGreaterEqual", // >=
+    L"OperatorLessEqual", // <=
+    L"OperatorIncrement", // ++
+    L"OperatorDecrement", // --
+    L"Comment", // //
+    L"Number", // integer
+    L"Float", // floating point number
+    L"Unknown",
+    L"UnexpectedEnd",
+    L"Unexpected",
+    L"End" // End of Input
 };
 
 static constexpr uint8_t KeywordStrLen = 16;
 
 static const std::wstring KeywordStr[] =
 {
-    U"if",
-    U"else",
-    U"for",
-    U"while",
-    U"do",
-    U"int",
-    U"float",
-    U"bool",
-    U"String",
-    U"char",
-    U"true",
-    U"false",
-    U"import",
-    U"export",
-    U"void",
-    U"return"
-};
-
+    L"if",
+    L"else",
+    L"for",
+    L"while",
+    L"do",
+    L"int",
+    L"float",
+    L"bool",
+    L"String",
+    L"char",
+    L"true",
+    L"false",
+    L"import",
+    L"export",
+    L"void",
+    L"return"
+};  
+    
 class Token
-{
+{   
 public:
     enum class Type
     {

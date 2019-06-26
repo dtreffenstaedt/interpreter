@@ -14,12 +14,12 @@ private:
     wchar_t m_char;
 
     bool m_eof;
-    std::basic_ifstream<wchar_t> m_inStream;
+    std::wifstream m_inStream;
 
     std::locale m_locale;
 
 public:
-    Scanner(const wchar_t *input);
+    Scanner(const char *input);
 
     Token nextToken();
 
@@ -51,7 +51,7 @@ private:
 
     inline void skipSpaces()
     {
-        while (isspace(m_char))
+        while (isspace(m_char, m_locale))
         {
             nextChar();
         }

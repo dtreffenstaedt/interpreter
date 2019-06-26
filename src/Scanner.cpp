@@ -1,14 +1,15 @@
 #include "../include/Scanner.h"
 #include <iostream>
 
-Scanner::Scanner(const wchar_t* input) :
+Scanner::Scanner(const char* input) :
     m_char(EOF),
     m_eof(false),
-    m_locale("C.utf8")
+    m_locale("en_US.UTF8")
 {
     m_inStream.open(input);
     if (m_inStream)
     {
+        m_inStream.imbue(m_locale);
         readCharacters();
         nextChar();
     }

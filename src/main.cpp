@@ -7,8 +7,9 @@
 #include "Timer.h"
 
 int main()
-{
-    Scanner sc(U"test2.csc");
+{   
+    std::setlocale(LC_ALL, "en_US.UTF8");
+    Scanner sc("test2.csc");
 
     Token t = sc.nextToken();
 
@@ -16,11 +17,11 @@ int main()
     tim.restart();
     while (t != Token::Type::End && t != Token::Type::UnexpectedEnd && t != Token::Type::Unexpected)
     {
-        std::wcout<<(wchar_t)t.name()<<" : "<<(wchar_t)t.value()<<std::endl;
+        std::wcout<<t.name()<<" : "<<t.value()<<"\n";
         t = sc.nextToken();
     }
     tim.stop();
     auto elapsed = tim.elapsed<std::chrono::nanoseconds>();
-    std::cout<<elapsed.count()<<"ns elapsed"<<std::endl;
+    std::cout<<elapsed.count()<<"ns elapsed\n";
     return 0;
 }
