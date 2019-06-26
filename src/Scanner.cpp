@@ -220,7 +220,7 @@ Token Scanner::nextToken()
         return Token(Token::Type::OperatorGreaterThan);
         break;
     }
-    std::string buf;
+    std::wstring buf;
 
     if ((m_char) == '"')
     {

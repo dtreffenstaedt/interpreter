@@ -14,7 +14,7 @@ private:
     wchar_t m_char;
 
     bool m_eof;
-    std::wifstream m_inStream;
+    std::basic_ifstream<wchar_t> m_inStream;
 
     std::locale m_locale;
 

@@ -8,7 +8,7 @@
 
 int main()
 {
-    Scanner sc("test2.csc");
+    Scanner sc(U"test2.csc");
 
     Token t = sc.nextToken();
 
@@ -16,7 +16,7 @@ int main()
     tim.restart();
     while (t != Token::Type::End && t != Token::Type::UnexpectedEnd && t != Token::Type::Unexpected)
     {
-        std::cout<<t.name()<<" : "<<t.value()<<std::endl;
+        std::wcout<<(wchar_t)t.name()<<" : "<<(wchar_t)t.value()<<std::endl;
         t = sc.nextToken();
     }
     tim.stop();
