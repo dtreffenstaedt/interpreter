@@ -2,7 +2,7 @@
 #define SCANNER_H
 
 #include <fstream>
-#include <cctype>
+#include <locale>
 
 #include "Token.h"
 #include "Queue.h"
@@ -10,14 +10,16 @@
 class Scanner
 {
 private:
-    Queue<char> m_buffer;
-    char m_char;
+    Queue<wchar_t> m_buffer;
+    wchar_t m_char;
 
     bool m_eof;
-    std::ifstream m_inStream;
+    std::wifstream m_inStream;
+
+    std::locale m_locale;
 
 public:
-    Scanner(const char *input);
+    Scanner(const wchar_t *input);
 
     Token nextToken();
 
@@ -61,7 +63,7 @@ private:
         {
             if (m_buffer.length() < 10)
             {
-                char c = 0;
+                wchar_t c = 0;
                 while ((m_buffer.length() < 40) && (m_inStream.get(c)))
                 {
                     m_buffer<<c;
