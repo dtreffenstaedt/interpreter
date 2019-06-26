@@ -2,14 +2,15 @@
 #define QUEUE_H
 
 #include <mutex>
+#include <memory>
 
 template <typename T>
 class Queue
 {
 public:
     Queue() :
-        first(0),
-        last(0),
+        first(nullptr),
+        last(nullptr),
         len(0)
     {}
 
@@ -23,7 +24,7 @@ public:
         }
         else
         {
-            first = new Node(value);
+            first = std::make_shared<Node>(value);
             last = first;
         }
         len++;
@@ -38,15 +39,13 @@ public:
             T val = first->value;
             if (first == last)
             {
-                delete first;
-                first = 0;
-                last = 0;
+                first = nullptr;
+                last = nullptr;
             }
             else
             {
-                Node* buf = first;
+                std::shared_ptr<Node> buf = first;
                 first = buf->next;
-                delete buf;
             }
             len--;
             return val;
@@ -72,11 +71,11 @@ private:
     {
     public:
         Node(T v) :
-            next(0),
+            next(nullptr),
             value(v)
         {}
 
-        Node* next = 0;
+        std::shared_ptr<Node> next = nullptr;
         T value;
 
         void append(T v)
@@ -87,13 +86,13 @@ private:
             }
             else
             {
-                next = new Node(v);
+                next = std::make_shared<Node>(v);
             }
         }
     };
 
-    Node* first;
-    Node* last;
+    std::shared_ptr<Node> first;
+    std::shared_ptr<Node> last;
     int len;
     std::mutex m_mutex;
 };
