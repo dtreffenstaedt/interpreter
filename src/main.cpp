@@ -4,6 +4,7 @@
 #include <streambuf>
 
 #include "Scanner.h"
+#include "Parser.h"
 #include "Timer.h"
 
 int main(int argc, char* argv[])
@@ -16,8 +17,17 @@ int main(int argc, char* argv[])
         file = argv[1];
     }
     std::wcout<<"opening "<<file.c_str()<<"\n";
-    Scanner sc(file.c_str());
+//    Scanner sc(file.c_str());
 
+    Parser p(file.c_str());
+
+    Timer tim;
+    tim.restart();
+    p.run();
+
+    auto elapsed = tim.count<std::chrono::nanoseconds>();
+    tim.stop();
+/*
     Token t = sc.nextToken();
 
     Queue<Token> queue;
@@ -37,7 +47,7 @@ int main(int argc, char* argv[])
     {
         t = queue.get();
         std::wcout<<t.name()<<" : "<<t.value()<<"\n";
-    }
+    }*/
     std::wcout<<elapsed<<"ns elapsed\n";
     return 0;
 }
