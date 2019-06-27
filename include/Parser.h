@@ -86,7 +86,6 @@ private:
     inline void nextToken()
     {
         m_currentToken = std::make_shared<Token>(m_buffer.get());
-        std::wcout<<m_currentToken->name()<<" : "<<m_currentToken->value()<<"\n";
         readTokens();
     }
 
