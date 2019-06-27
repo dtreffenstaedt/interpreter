@@ -3,6 +3,12 @@
 
 #include <string>
 
+struct Position
+{
+    int row = 1;
+    int col = 1;
+};
+
 static const std::wstring TokenTypeStr[] =
 {
     L"KeywordIf",
@@ -158,9 +164,10 @@ public:
 private:
     Type m_type;
     std::wstring m_value;
+    Position m_pos;
 
 public:
-    Token(Type t, std::wstring value);
+    Token(Type t, std::wstring value, Position pos);
 
     explicit Token(Type t = Token::Type::End);
 
@@ -171,6 +178,8 @@ public:
     double toNumber() const;
 
     std::wstring name() const;
+
+    Position pos() const;
 
     bool operator==(Token &other) const;
 

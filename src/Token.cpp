@@ -1,8 +1,9 @@
 #include "Token.h"
 
-Token::Token(Token::Type t, std::wstring value) :
+Token::Token(Token::Type t, std::wstring value, Position pos) :
     m_type(std::move(t)),
-    m_value(std::move(value))
+    m_value(std::move(value)),
+    m_pos(pos)
 {}
 
 Token::Token(Token::Type t) :
@@ -27,6 +28,11 @@ double Token::toNumber() const
 std::wstring Token::name() const
 {
     return TokenTypeStr[(int) m_type];
+}
+
+Position Token::pos() const
+{
+    return m_pos;
 }
 
 bool Token::operator==(Token &other) const
