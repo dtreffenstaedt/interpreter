@@ -70,7 +70,7 @@ private:
     class Node
     {
     public:
-        Node(T v) :
+        explicit Node(T v) :
             next(nullptr),
             value(v)
         {}
