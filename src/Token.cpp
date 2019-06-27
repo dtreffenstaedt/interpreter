@@ -1,12 +1,12 @@
 #include "Token.h"
 
-Token::Token(Token::Type t, std::wstring value, Position pos) :
+Token::Token(Position pos, Token::Type t, std::wstring value) :
     m_type(std::move(t)),
     m_value(std::move(value)),
     m_pos(pos)
 {}
 
-Token::Token(Token::Type t) :
+Token::Token(Position pos, Token::Type t) :
     m_type(t)
 {}
 

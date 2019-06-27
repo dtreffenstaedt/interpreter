@@ -18,63 +18,64 @@ Scanner::Scanner(const char* input) :
 Token Scanner::nextToken()
 {
     skipSpaces();
+    Position p = m_pos;
     if (atEnd())
     {
-        return Token(Token::Type::End);
+        return Token(p, Token::Type::End);
     }
     switch (m_char)
     {
     case '%':
         nextChar();
-        return Token(Token::Type::OperatorModulo);
+        return Token(p, Token::Type::OperatorModulo);
         break;
     case '*':
         nextChar();
         if ((m_char) == '=')
         {
             nextChar();
-            return Token(Token::Type::OperatorMultAssign);
+            return Token(p, TToken::Type::OperatorMultAssign);
         }
-        return Token(Token::Type::OperatorMul);
+        return Token(p, TToken::Type::OperatorMul);
         break;
     case '+':
         nextChar();
         if ((m_char) == '=')
         {
             nextChar();
-            return Token(Token::Type::OperatorAddAssign);
+            return Token(p, Token::Type::OperatorAddAssign);
         }
         if ((m_char) == '+')
         {
             nextChar();
-            return Token(Token::Type::OperatorIncrement);
+            return Token(p, Token::Type::OperatorIncrement);
         }
-        return Token(Token::Type::OperatorPlus);
+        return Token(p, Token::Type::OperatorPlus);
         break;
     case '-':
         nextChar();
         if ((m_char) == '=')
         {
             nextChar();
-            return Token(Token::Type::OperatorSubAssign);
+            return Token(p, Token::Type::OperatorSubAssign);
         }
         if ((m_char) == '-')
         {
             nextChar();
-            return Token(Token::Type::OperatorDecrement);
+            return Token(p, Token::Type::OperatorDecrement);
         }
-        return Token(Token::Type::OperatorMinus);
+        return Token(p, Token::Type::OperatorMinus);
         break;
     case '^':
         nextChar();
-        return Token(Token::Type::OperatorExp);
+        return Token(p, Token::Type::OperatorExp);
         break;
     case '!':
         nextChar();
         if (m_char == '=')
         {
             nextChar();
-            return Token(Token::Type::OperatorNotEqual);
+            return Token(p, Token::Type::OperatorNotEqual);
         }
         break;
     case '/':
@@ -82,7 +83,7 @@ Token Scanner::nextToken()
         if ((m_char) == '=')
         {
             nextChar();
-            return Token(Token::Type::OperatorDivAssign);
+            return Token(p, Token::Type::OperatorDivAssign);
         }
         if ((m_char) == '/')
         {
@@ -94,7 +95,7 @@ Token Scanner::nextToken()
             gotoCommentEnd();
             return nextToken();
         }
-        return Token(Token::Type::OperatorDiv);
+        return Token(p, Token::Type::OperatorDiv);
         break;
     case '#':
         gotoNextLine();
@@ -102,75 +103,75 @@ Token Scanner::nextToken()
         break;
     case '(':
         nextChar();
-        return Token(Token::Type::LParen);
+        return Token(p, Token::Type::LParen);
         break;
     case ')':
         nextChar();
-        return Token(Token::Type::RParen);
+        return Token(p, Token::Type::RParen);
         break;
     case '{':
         nextChar();
-        return Token(Token::Type::LBrace);
+        return Token(p, Token::Type::LBrace);
         break;
     case '}':
         nextChar();
-        return Token(Token::Type::RBrace);
+        return Token(p, Token::Type::RBrace);
         break;
     case '[':
         nextChar();
-        return Token(Token::Type::LBracket);
+        return Token(p, Token::Type::LBracket);
         break;
     case ']':
         nextChar();
-        return Token(Token::Type::RBracket);
+        return Token(p, Token::Type::RBracket);
         break;
     case ';':
         nextChar();
-        return Token(Token::Type::Semicolon);
+        return Token(p, Token::Type::Semicolon);
         break;
     case ':':
         nextChar();
         if (m_char == ':')
         {
             nextChar();
-            return Token(Token::Type::OperatorScopeResolution);
+            return Token(p, Token::Type::OperatorScopeResolution);
         }
-        return Token(Token::Type::Colon);
+        return Token(p, Token::Type::Colon);
         break;
     case ',':
         nextChar();
-        return Token(Token::Type::Comma);
+        return Token(p, Token::Type::Comma);
         break;
     case '.':
         nextChar();
-        return Token(Token::Type::Period);
+        return Token(p, Token::Type::Period);
         break;
     case '=':
         nextChar();
         if ((m_char) == '=')
         {
             nextChar();
-            return Token(Token::Type::OperatorEqual);
+            return Token(p, Token::Type::OperatorEqual);
         }
-        return Token(Token::Type::OperatorAssign);
+        return Token(p, Token::Type::OperatorAssign);
         break;
     case '<':
         nextChar();
         if ((m_char) == '=')
         {
             nextChar();
-            return Token(Token::Type::OperatorLessEqual);
+            return Token(p, Token::Type::OperatorLessEqual);
         }
-        return Token(Token::Type::OperatorLessThan);
+        return Token(p, Token::Type::OperatorLessThan);
         break;
     case '>':
         nextChar();
         if ((m_char) == '=')
         {
             nextChar();
-            return Token(Token::Type::OperatorGreaterEqual);
+            return Token(p, Token::Type::OperatorGreaterEqual);
         }
-        return Token(Token::Type::OperatorGreaterThan);
+        return Token(p, Token::Type::OperatorGreaterThan);
         break;
     }
     std::wstring buf;
@@ -182,7 +183,7 @@ Token Scanner::nextToken()
         {
             if (atEnd())
             {
-                return Token(Token::Type::UnexpectedEnd);
+                return Token(p, Token::Type::UnexpectedEnd);
             }
             if ((m_char) == '\\')
             {
@@ -197,7 +198,7 @@ Token Scanner::nextToken()
             buf += m_char;
             nextChar();
         }
-        return Token(Token::Type::String, buf);
+        return Token(p, Token::Type::String, buf);
     }
     if ((m_char) == '\'')
     {
@@ -207,10 +208,10 @@ Token Scanner::nextToken()
         if ((m_char) != '\'')
         {
             buf = m_char;
-            return Token(Token::Type::Unexpected, buf);
+            return Token(p, Token::Type::Unexpected, buf);
         }
         nextChar();
-        return Token(Token::Type::Character, buf);
+        return Token(p, Token::Type::Character, buf);
     }
     if (isalpha(m_char, m_locale))
     {
@@ -218,7 +219,7 @@ Token Scanner::nextToken()
         {
             if (atEnd())
             {
-                return Token(Token::Type::UnexpectedEnd);
+                return Token(p, Token::Type::UnexpectedEnd);
             }
             buf += (m_char);
             nextChar();
@@ -227,10 +228,10 @@ Token Scanner::nextToken()
         {
             if (buf == KeywordStr[i])
             {
-                return Token((Token::Type) i);
+                return Token(p, (Token::Type) i);
             }
         }
-        return Token(Token::Type::Literal, buf);
+        return Token(p, Token::Type::Literal, buf);
     }
     if (isdigit(m_char, m_locale))
     {
@@ -239,7 +240,7 @@ Token Scanner::nextToken()
         {
             if (atEnd())
             {
-                return Token(Token::Type::UnexpectedEnd);
+                return Token(p, Token::Type::UnexpectedEnd);
             }
             if ((m_char) == '.')
             {
@@ -253,9 +254,9 @@ Token Scanner::nextToken()
             buf += (m_char);
             nextChar();
         }
-        return Token(Token::Type::Number, buf);
+        return Token(p, Token::Type::Number, buf);
     }
     buf = (m_char);
     nextChar();
-    return Token(Token::Type::Unknown, buf);
+    return Token(p, Token::Type::Unknown, buf);
 }
