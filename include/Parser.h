@@ -4,6 +4,7 @@
 #include <memory>
 #include <exception>
 #include <iostream>
+#include <cmath>
 
 #include "Scanner.h"
 #include "Token.h"
@@ -30,8 +31,8 @@ public:
 class Parser
 {
 private:
-    std::shared_ptr<Scanner> m_scanner;
-    Queue<std::shared_ptr<Token> > m_buffer;
+    Scanner m_scanner;
+    Queue<Token> m_buffer;
     std::shared_ptr<Token> m_currentToken;
     bool m_eof;
 
@@ -43,7 +44,9 @@ private:
             {
                 while ((m_buffer.length() < 40) && !(m_scanner.atEnd()))
                 {
-                    m_buffer<<m_scanner->nextToken();
+                    Token t = m_scanner.nextToken();
+                    std::wcout<<t.name()<<" : "<<t.value()<<"\n";
+                    m_buffer<<t;
                 }
                 if (m_scanner.atEnd())
                 {
@@ -55,7 +58,7 @@ private:
 
     void nextToken()
     {
-        m_currentToken = m_buffer.get();
+        m_currentToken = std::make_shared<Token>(m_buffer.get());
         readTokens();
     }
 
@@ -69,53 +72,78 @@ private:
         throw UnexpectedToken((*m_currentToken), tokenType);
     }
 
+    double factor()
+    {
+        std::shared_ptr<Token> f = m_currentToken;
+        if ((*f) == Token::Type::LParen)
+        {
+            eat(Token::Type::LParen);
+            double result = expression();
+            eat(Token::Type::RParen);
+            return result;
+        }
+        eat(Token::Type::Number);
+        return f->toNumber();
+    }
+
+    double exponent()
+    {
+        double result = factor();
+
+        while ((*m_currentToken) == Token::Type::OperatorExp)
+        {
+            std::shared_ptr<Token> t = m_currentToken;
+            eat(Token::Type::OperatorExp);
+            result = pow(result, factor());
+        }
+        return result;
+    }
+
+    double term()
+    {
+        double result = exponent();
+
+        while ((*m_currentToken) == Token::Type::OperatorMul || (*m_currentToken) == Token::Type::OperatorDiv)
+        {
+            std::shared_ptr<Token> t = m_currentToken;
+            if ((*t) == Token::Type::OperatorMul)
+            {
+                eat(Token::Type::OperatorMul);
+                result *= exponent();
+            }
+            else if ((*t) == Token::Type::OperatorDiv)
+            {
+                eat(Token::Type::OperatorDiv);
+                result /= exponent();
+            }
+        }
+        return result;
+    }
+
     double expression()
     {
-        std::shared_ptr<Token> left = m_currentToken;
-        eat(Token::Type::Number);
+        double result = term();
 
-        std::shared_ptr<Token> op = m_currentToken;
-        if (op == Token::Type::OperatorPlus)
+        while ((*m_currentToken) == Token::Type::OperatorPlus || (*m_currentToken) == Token::Type::OperatorMinus)
         {
-            eat(Token::Type::OperatorPlus);
+            std::shared_ptr<Token> t = m_currentToken;
+            if ((*t) == Token::Type::OperatorPlus)
+            {
+                eat(Token::Type::OperatorPlus);
+                result += term();
+            }
+            else if ((*t) == Token::Type::OperatorMinus)
+            {
+                eat(Token::Type::OperatorMinus);
+                result -= term();
+            }
         }
-        else if (op == Token::Type::OperatorMinus)
-        {
-            eat(Token::Type::OperatorMinus);
-        }
-        else if (op == Token::Type::OperatorMul)
-        {
-            eat(Token::Type::OperatorMul);
-        }
-        else
-        {
-            eat(Token::Type::OperatorDiv);
-        }
-
-        std::shared_ptr<Token> right = m_currentToken;
-        eat(Token::Type::Number);
-
-        if (op == Token::Type::OperatorPlus)
-        {
-            (left->toNumber())+(right->toNumber());
-        }
-        else if (op == Token::Type::OperatorMinus)
-        {
-            (left->toNumber())-(right->toNumber());
-        }
-        else if (op == Token::Type::OperatorMul)
-        {
-            (left->toNumber())*(right->toNumber());
-        }
-        else if (op == Token::Type::OperatorDiv)
-        {
-            (left->toNumber())/(right->toNumber());
-        }
+        return result;
     }
 
 public:
-    Parser(std::shared_ptr<Scanner> sc) :
-        m_scanner(sc),
+    Parser(const char* input) :
+        m_scanner(input),
         m_currentToken(nullptr),
         m_eof(false)
     {
