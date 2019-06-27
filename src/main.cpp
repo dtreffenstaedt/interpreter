@@ -10,7 +10,7 @@
 int main(int argc, char* argv[])
 {   
     std::setlocale(LC_ALL, "en_US.UTF8");
-    std::string file = "test2.csc";
+    std::string file = "abc.csc";
 
     if (argc == 2)
     {
@@ -23,31 +23,18 @@ int main(int argc, char* argv[])
 
     Timer tim;
     tim.restart();
-    p.run();
-
-    auto elapsed = tim.count<std::chrono::nanoseconds>();
-    tim.stop();
-/*
-    Token t = sc.nextToken();
-
-    Queue<Token> queue;
-
-    Timer tim;
-    tim.restart();
-    while (t != Token::Type::End && t != Token::Type::UnexpectedEnd && t != Token::Type::Unexpected)
+    try
     {
-        queue<<t;
-        t = sc.nextToken();
+        p.parse();
     }
-    queue<<t;
+    catch (UnexpectedToken& e)
+    {
+        e.print();
+        return -1;
+    }
+
     auto elapsed = tim.count<std::chrono::nanoseconds>();
     tim.stop();
-
-    while (!queue.empty())
-    {
-        t = queue.get();
-        std::wcout<<t.name()<<" : "<<t.value()<<"\n";
-    }*/
     std::wcout<<elapsed<<"ns elapsed\n";
     return 0;
 }
