@@ -162,15 +162,13 @@ private:
 public:
     Token(Type t, std::wstring value);
 
-    Token(Type t = Token::Type::End);
+    explicit Token(Type t = Token::Type::End);
 
     Type type() const;
 
     std::wstring value() const;
 
-    int toInt() const;
-
-    float toFloat() const;
+    double toNumber() const;
 
     std::wstring name() const;
 

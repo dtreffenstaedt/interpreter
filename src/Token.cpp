@@ -19,14 +19,9 @@ std::wstring Token::value() const
     return m_value;
 }
 
-int Token::toInt() const
+double Token::toNumber() const
 {
-    return std::stoi(m_value);
-}
-
-float Token::toFloat() const
-{
-    return std::stof(m_value);
+    return std::stod(m_value);
 }
 
 std::wstring Token::name() const
