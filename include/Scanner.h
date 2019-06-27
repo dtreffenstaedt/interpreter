@@ -20,8 +20,12 @@ private:
 
 public:
     Scanner(const char *input);
-
     Token nextToken();
+
+    inline bool atEnd()
+    {
+        return m_buffer.empty();
+    }
 
 private:
     inline void gotoNextLine()
@@ -81,11 +85,6 @@ private:
     {
         m_char = m_buffer.get();
         readCharacters();
-    }
-
-    inline bool atEnd()
-    {
-        return m_buffer.empty();
     }
 };
 
