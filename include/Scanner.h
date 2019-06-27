@@ -18,8 +18,7 @@ private:
 
     std::locale m_locale;
 
-    int m_row;
-    int m_col;
+    Position m_pos;
 
 public:
     Scanner(const char *input);
@@ -87,11 +86,11 @@ private:
     inline void nextChar()
     {
         m_char = m_buffer.get();
-        m_col++;
+        m_pos.col++;
         if (m_char == '\n')
         {
-            m_col = 1;
-            m_row++;
+            m_pos.col = 1;
+            m_pos.row++;
         }
         readCharacters();
     }

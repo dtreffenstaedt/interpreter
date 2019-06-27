@@ -4,9 +4,7 @@
 Scanner::Scanner(const char* input) :
     m_char(EOF),
     m_eof(false),
-    m_locale("en_US.UTF8"),
-    m_row(1),
-    m_col(1)
+    m_locale("en_US.UTF8")
 {
     m_inStream.open(input);
     if (m_inStream)
