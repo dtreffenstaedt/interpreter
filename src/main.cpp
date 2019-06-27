@@ -17,7 +17,6 @@ int main(int argc, char* argv[])
         file = argv[1];
     }
     std::wcout<<"opening "<<file.c_str()<<"\n";
-//    Scanner sc(file.c_str());
 
     Parser p(file.c_str());
 
@@ -25,7 +24,7 @@ int main(int argc, char* argv[])
     tim.restart();
     try
     {
-        p.parse();
+        p.parse()->traverse();
     }
     catch (UnexpectedToken& e)
     {
@@ -35,6 +34,6 @@ int main(int argc, char* argv[])
 
     auto elapsed = tim.count<std::chrono::nanoseconds>();
     tim.stop();
-    std::wcout<<elapsed<<"ns elapsed\n";
+    std::wcout<<L"\n"<<elapsed<<L"ns elapsed\n";
     return 0;
 }
