@@ -1,5 +1,7 @@
 #include "Token.h"
 
+
+
 Token::Token(Position pos, Token::Type t, std::wstring value) :
     m_type(std::move(t)),
     m_value(std::move(value)),
@@ -7,7 +9,8 @@ Token::Token(Position pos, Token::Type t, std::wstring value) :
 {}
 
 Token::Token(Position pos, Token::Type t) :
-    m_type(t)
+    m_type(t),
+    m_pos(pos)
 {}
 
 Token::Type Token::type() const

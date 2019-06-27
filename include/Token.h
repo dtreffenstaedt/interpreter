@@ -169,7 +169,7 @@ private:
 public:
     Token(Position pos, Type t, std::wstring value);
 
-    explicit Token(Position pos, Type t = Token::Type::End);
+    explicit Token(Position pos = {1,1}, Type t = Token::Type::End);
 
     Type type() const;
 

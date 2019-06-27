@@ -34,9 +34,9 @@ Token Scanner::nextToken()
         if ((m_char) == '=')
         {
             nextChar();
-            return Token(p, TToken::Type::OperatorMultAssign);
+            return Token(p, Token::Type::OperatorMultAssign);
         }
-        return Token(p, TToken::Type::OperatorMul);
+        return Token(p, Token::Type::OperatorMul);
         break;
     case '+':
         nextChar();
