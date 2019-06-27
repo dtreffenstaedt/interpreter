@@ -35,7 +35,7 @@ static const std::wstring TokenTypeStr[] =
     L"Literal",
     L"OperatorPlus", // +
     L"OperatorMinus", // -
-    L"OperatorMul", // *
+    L"OperatorMult", // *
     L"OperatorDiv", // /
     L"OperatorExp", // ^
     L"LParen", // (
@@ -125,7 +125,7 @@ public:
     Literal,
     OperatorPlus, // +
     OperatorMinus, // -
-    OperatorMul, // *
+    OperatorMult, // *
     OperatorDiv, // /
     OperatorExp, // ^
     LParen, // (

@@ -214,12 +214,12 @@ private:
     {
         std::shared_ptr<AST> result = exponent();
 
-        while ((*m_currentToken) == Token::Type::OperatorMul || (*m_currentToken) == Token::Type::OperatorDiv)
+        while ((*m_currentToken) == Token::Type::OperatorMult || (*m_currentToken) == Token::Type::OperatorDiv)
         {
             std::shared_ptr<Token> t = m_currentToken;
-            if ((*t) == Token::Type::OperatorMul)
+            if ((*t) == Token::Type::OperatorMult)
             {
-                eat(Token::Type::OperatorMul);
+                eat(Token::Type::OperatorMult);
             }
             else if ((*t) == Token::Type::OperatorDiv)
             {

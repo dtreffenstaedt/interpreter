@@ -36,7 +36,7 @@ Token Scanner::nextToken()
             nextChar();
             return Token(p, Token::Type::OperatorMultAssign);
         }
-        return Token(p, Token::Type::OperatorMul);
+        return Token(p, Token::Type::OperatorMult);
         break;
     case '+':
         nextChar();
