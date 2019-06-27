@@ -36,7 +36,7 @@ private:
     std::shared_ptr<Token> m_currentToken;
     bool m_eof;
 
-    void readTokens()
+    inline void readTokens()
     {
         if (!m_eof)
         {
@@ -56,13 +56,13 @@ private:
         }
     }
 
-    void nextToken()
+    inline void nextToken()
     {
         m_currentToken = std::make_shared<Token>(m_buffer.get());
         readTokens();
     }
 
-    void eat(Token::Type tokenType)
+    inline void eat(Token::Type tokenType)
     {
         if ((*m_currentToken) == tokenType)
         {
@@ -72,7 +72,7 @@ private:
         throw UnexpectedToken((*m_currentToken), tokenType);
     }
 
-    double factor()
+    inline double factor()
     {
         std::shared_ptr<Token> f = m_currentToken;
         if ((*f) == Token::Type::LParen)
@@ -86,7 +86,7 @@ private:
         return f->toNumber();
     }
 
-    double exponent()
+    inline double exponent()
     {
         double result = factor();
 
@@ -99,7 +99,7 @@ private:
         return result;
     }
 
-    double term()
+    inline double term()
     {
         double result = exponent();
 
@@ -120,7 +120,7 @@ private:
         return result;
     }
 
-    double expression()
+    inline double expression()
     {
         double result = term();
 
