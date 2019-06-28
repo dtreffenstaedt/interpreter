@@ -99,10 +99,10 @@ private:
         throw UnexpectedToken((*m_currentToken), Token({1,1}, tokenType));
     }
 
-    inline std::shared_ptr<AST> compountStatement()
+    inline std::shared_ptr<AST::Base> compountStatement()
     {
         eat(Token::Type::LBrace);
-        std::shared_ptr<Compount> root = std::make_shared<Compount>(Compount());
+        std::shared_ptr<AST::Compount> root = std::make_shared<AST::Compount>(AST::Compount());
         root->append(statement());
         while ((*m_currentToken) == Token::Type::Semicolon)
         {
@@ -117,29 +117,75 @@ private:
         return root;
     }
 
-    inline std::shared_ptr<AST> statement()
+    inline std::shared_ptr<AST::Base> statement()
     {
         if ((*m_currentToken) == Token::Type::LBrace)
         {
             return compountStatement();
         }
-        else if ((*m_currentToken) == Token::Type::Literal)
+        else if ((*m_currentToken) == Token::Type::Identifier)
         {
             return assignment();
         }
-        return std::make_shared<Empty>(Empty());
+        else if (
+            (*m_currentToken) == Token::Type::KeywordQuantity ||
+            (*m_currentToken) == Token::Type::KeywordNumber ||
+            (*m_currentToken) == Token::Type::KeywordBool ||
+            (*m_currentToken) == Token::Type::KeywordString ||
+            (*m_currentToken) == Token::Type::KeywordChar
+        )
+        {
+            return definition();
+        }
+        return std::make_shared<AST::Empty>(AST::Empty());
     }
 
-    inline std::shared_ptr<AST> variable()
+    inline std::shared_ptr<AST::Base> definition()
     {
-       std::shared_ptr<AST> var = std::make_shared<Variable>(Variable(m_currentToken));
-       eat(Token::Type::Literal);
+        std::shared_ptr<Token> t = m_currentToken;
+        if ((*m_currentToken) == Token::Type::KeywordQuantity)
+        {
+            eat(Token::Type::KeywordQuantity);
+        }
+        if ((*m_currentToken) == Token::Type::KeywordNumber)
+        {
+            eat(Token::Type::KeywordNumber);
+        }
+        if ((*m_currentToken) == Token::Type::KeywordBool)
+        {
+            eat(Token::Type::KeywordBool);
+        }
+        if ((*m_currentToken) == Token::Type::KeywordString)
+        {
+            eat(Token::Type::KeywordString);
+        }
+        if ((*m_currentToken) == Token::Type::KeywordChar)
+        {
+            eat(Token::Type::KeywordChar);
+        }
+        std::shared_ptr<Token> name = m_currentToken;
+        eat(Token::Type::Identifier);
+        if ((*m_currentToken) == Token::Type::OperatorAssign)
+        {
+            eat(Token::Type::OperatorAssign);
+            return std::make_shared<AST::Definition>(AST::Definition(t, std::make_shared<AST::Variable>(AST::Variable(name)), expression()));
+        }
+        else
+        {
+            return std::make_shared<AST::Definition>(AST::Definition(t, std::make_shared<AST::Variable>(AST::Variable(name)), std::make_shared<AST::Empty>(AST::Empty())));
+        }
+    }
+
+    inline std::shared_ptr<AST::Base> variable()
+    {
+       std::shared_ptr<AST::Base> var = std::make_shared<AST::Variable>(AST::Variable(m_currentToken));
+       eat(Token::Type::Identifier);
        return var;
     }
 
-    inline std::shared_ptr<AST> assignment()
+    inline std::shared_ptr<AST::Base> assignment()
     {
-        std::shared_ptr<AST> var = variable();
+        std::shared_ptr<AST::Base> var = variable();
         std::shared_ptr<Token> t = m_currentToken;
         if ((*t) == Token::Type::OperatorAssign)
         {
@@ -161,57 +207,56 @@ private:
         {
             eat(Token::Type::OperatorDivAssign);
         }
-        return std::make_shared<Assignment>(Assignment(var,t,expression()));
-        std::shared_ptr<AST> right = variable();
+        return std::make_shared<AST::Assignment>(AST::Assignment(var,t,expression()));
     }
 
-    inline std::shared_ptr<AST> factor()
+    inline std::shared_ptr<AST::Base> factor()
     {
         std::shared_ptr<Token> f = m_currentToken;
 
         if ((*f) == Token::Type::Number)
         {
             eat(Token::Type::Number);
-            return std::make_shared<Number>(Number(f));
+            return std::make_shared<AST::Number>(AST::Number(f));
         }
         else if ((*f) == Token::Type::OperatorPlus)
         {
             eat(Token::Type::OperatorPlus);
-            std::shared_ptr<AST> result = std::make_shared<UnaryOperation>(UnaryOperation(f, factor()));
+            std::shared_ptr<AST::Base> result = std::make_shared<AST::UnaryOperation>(AST::UnaryOperation(f, factor()));
             return result;
         }
         if ((*f) == Token::Type::OperatorMinus)
         {
             eat(Token::Type::OperatorMinus);
-            std::shared_ptr<AST> result = std::make_shared<UnaryOperation>(UnaryOperation(f, factor()));
+            std::shared_ptr<AST::Base> result = std::make_shared<AST::UnaryOperation>(AST::UnaryOperation(f, factor()));
             return result;
         }
         else if ((*f) == Token::Type::LParen)
         {
             eat(Token::Type::LParen);
-            std::shared_ptr<AST> result = expression();
+            std::shared_ptr<AST::Base> result = expression();
             eat(Token::Type::RParen);
             return result;
         }
         return variable();
     }
 
-    inline std::shared_ptr<AST> exponent()
+    inline std::shared_ptr<AST::Base> exponent()
     {
-        std::shared_ptr<AST> result = factor();
+        std::shared_ptr<AST::Base> result = factor();
 
         while ((*m_currentToken) == Token::Type::OperatorExp)
         {
             std::shared_ptr<Token> t = m_currentToken;
             eat(Token::Type::OperatorExp);
-            result = std::make_shared<BinaryOperation>(BinaryOperation(result, t, factor()));
+            result = std::make_shared<AST::BinaryOperation>(AST::BinaryOperation(result, t, factor()));
         }
         return result;
     }
 
-    inline std::shared_ptr<AST> term()
+    inline std::shared_ptr<AST::Base> term()
     {
-        std::shared_ptr<AST> result = exponent();
+        std::shared_ptr<AST::Base> result = exponent();
 
         while ((*m_currentToken) == Token::Type::OperatorMult || (*m_currentToken) == Token::Type::OperatorDiv)
         {
@@ -224,14 +269,14 @@ private:
             {
                 eat(Token::Type::OperatorDiv);
             }
-            result = std::make_shared<BinaryOperation>(BinaryOperation(result, t, exponent()));
+            result = std::make_shared<AST::BinaryOperation>(AST::BinaryOperation(result, t, exponent()));
         }
         return result;
     }
 
-    inline std::shared_ptr<AST> expression()
+    inline std::shared_ptr<AST::Base> expression()
     {
-        std::shared_ptr<AST> result = term();
+        std::shared_ptr<AST::Base> result = term();
 
         while ((*m_currentToken) == Token::Type::OperatorPlus || (*m_currentToken) == Token::Type::OperatorMinus)
         {
@@ -244,7 +289,7 @@ private:
             {
                 eat(Token::Type::OperatorMinus);
             }
-            result = std::make_shared<BinaryOperation>(BinaryOperation(result, t, term()));
+            result = std::make_shared<AST::BinaryOperation>(AST::BinaryOperation(result, t, term()));
         }
         return result;
     }
@@ -259,9 +304,9 @@ public:
         nextToken();
     }
 
-    std::shared_ptr<AST> parse()
+    std::shared_ptr<AST::Base> parse()
     {
-        std::shared_ptr<AST> result = statement();
+        std::shared_ptr<AST::Base> result = statement();
         eat(Token::Type::End);
         return result;
     }
