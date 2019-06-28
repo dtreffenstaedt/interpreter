@@ -6,146 +6,281 @@
 #include <list>
 
 #include "Token.h"
+#include "VariableManager.h"
 
-class AST
+struct Data
 {
-public:
-    virtual void traverse() = 0;
+    enum class Type
+    {
+//            Quantity,
+        Number,
+//            Boolean,
+        String,
+//            Character,
+//            List
+        Void
+    } type = Type::Void;
+
+//        Quantity t_quantity;
+    double t_number;
+    std::wstring t_string;
+//        char t_char;
+//        bool t_bool;
+//        std::list<Variable> t_list;
 };
 
-class Empty : public AST
+namespace AST
 {
-public:
-    explicit Empty()
-    {}
-
-    virtual void traverse()
-    {}
-};
-
-class BinaryOperation : public AST
-{
-private:
-    std::shared_ptr<AST> m_left;
-    std::shared_ptr<Token> m_token;
-    std::shared_ptr<AST> m_right;
-public:
-    BinaryOperation(std::shared_ptr<AST> left, std::shared_ptr<Token> token, std::shared_ptr<AST> right) :
-        m_left(left),
-        m_token(token),
-        m_right(right)
-    {}
-
-    virtual void traverse()
+    class Base
     {
-        std::wcout<<L"(";
-        m_left->traverse();
-        std::wcout<<L" "<<m_token->name()<<L" ";
-        m_right->traverse();
-        std::wcout<<L")";
-    }
-};
+    public:
+        virtual void traverse() = 0;
+        virtual Data execute(std::shared_ptr<VariableManager>) = 0;
+    };
 
-class UnaryOperation : public AST
-{
-private:
-    std::shared_ptr<Token> m_token;
-    std::shared_ptr<AST> m_expression;
-public:
-    UnaryOperation(std::shared_ptr<Token> token, std::shared_ptr<AST> expression) :
-        m_token(token),
-        m_expression(expression)
-    {}
-
-    virtual void traverse()
+    class Empty : public Base
     {
-        std::wcout<<L"(";
-        std::wcout<<L" "<<m_token->name()<<L" ";
-        m_expression->traverse();
-        std::wcout<<L")";
-    }
-};
+    public:
+        explicit Empty()
+        {}
 
-class Compount : public AST
-{
-private:
-    std::list<std::shared_ptr<AST> > m_statements;
-public:
-    Compount()
-    {}
+        virtual void traverse()
+        {}
 
-    void append(std::shared_ptr<AST> statement)
-    {
-        m_statements.push_back(statement);
-    }
-
-    virtual void traverse()
-    {
-        std::wcout<<L"Compount: \n";
-        for (auto i = m_statements.begin(); i != m_statements.end(); ++i)
+        virtual Data execute(std::shared_ptr<VariableManager> varManager)
         {
-            (*i)->traverse();
-            std::wcout<<L"\n";
+            return Data();
         }
-        std::wcout<<L"/Compount\n";
-    }
-};
+    };
 
-class Assignment : public AST
-{
-private:
-    std::shared_ptr<AST> m_left;
-    std::shared_ptr<Token> m_token;
-    std::shared_ptr<AST> m_right;
-public:
-    Assignment(std::shared_ptr<AST> left, std::shared_ptr<Token> token, std::shared_ptr<AST> right) :
-        m_left(left),
-        m_token(token),
-        m_right(right)
-    {}
-
-    virtual void traverse()
+    class BinaryOperation : public Base
     {
-        std::wcout<<L"(";
-        m_left->traverse();
-        std::wcout<<L" "<<m_token->name()<<L" ";
-        m_right->traverse();
-        std::wcout<<L")";
-    }
-};
+    private:
+        std::shared_ptr<Base> m_left;
+        std::shared_ptr<Token> m_token;
+        std::shared_ptr<Base> m_right;
+    public:
+        BinaryOperation(std::shared_ptr<Base> left, std::shared_ptr<Token> token, std::shared_ptr<Base> right) :
+            m_left(left),
+            m_token(token),
+            m_right(right)
+        {}
 
-class Variable : public AST
-{
-private:
-    std::shared_ptr<Token> m_token;
-    std::wstring m_name;
-public:
-    Variable(std::shared_ptr<Token>(token)) :
-        m_token(token),
-        m_name(token->name())
-    {}
+        virtual void traverse()
+        {
+            std::wcout<<L"BinOp(";
+            m_left->traverse();
+            std::wcout<<L" "<<m_token->name()<<L" ";
+            m_right->traverse();
+            std::wcout<<L")";
+        }
 
-    virtual  void traverse()
+        virtual Data execute(std::shared_ptr<VariableManager> varManager)
+        {
+            Data d;
+            d.type = Data::Type::Number;
+            Data left = m_left->execute(std::shared_ptr<VariableManager>␣varManager);
+            Data right = m_right->execute(std::shared_ptr<VariableManager>␣varManager);
+            if (left.type != Data::Type::Number || right.type != Data::Type::Number)
+            {
+                // TODO throw wrong operand Type.
+                return Data();
+            }
+            if ((*m_token) == Token::Type::OperationMult)
+            {
+                d.t_number = left.t_number * right.t_number;
+                return d;
+            }
+            if ((*m_token) == Token::Type::OperationDiv)
+            {
+                d.t_number = left.t_number / right.t_number;
+                return d;
+            }
+            if ((*m_token) == Token::Type::OperationPlus)
+            {
+                d.t_number = left.t_number + right.t_number;
+                return d;
+            }
+            if ((*m_token) == Token::Type::OperationMinus)
+            {
+                d.t_number = left.t_number - right.t_number;
+                return d;
+            }
+            if ((*m_token) == Token::Type::OperationExp)
+            {
+                d.t_number = pow(left.t_number, right.t_number);
+                return d;
+            }
+            return Data();
+        }
+    };
+
+    class UnaryOperation : public Base
     {
-        std::wcout<<m_token->value();
-    }
-};
+    private:
+        std::shared_ptr<Token> m_token;
+        std::shared_ptr<Base> m_expression;
+    public:
+        UnaryOperation(std::shared_ptr<Token> token, std::shared_ptr<Base> expression) :
+            m_token(token),
+            m_expression(expression)
+        {}
 
-class Number : public AST
-{
-private:
-    std::shared_ptr<Token> m_token;
-    double m_number;
-public:
-    Number(std::shared_ptr<Token>(token)) :
-        m_token(token),
-        m_number(token->toNumber())
-    {}
+        virtual void traverse()
+        {
+            std::wcout<<L"(";
+            std::wcout<<L" "<<m_token->name()<<L" ";
+            m_expression->traverse();
+            std::wcout<<L")";
+        }
 
-    virtual  void traverse()
+        virtual Data execute(std::shared_ptr<VariableManager> varManager)
+        {
+            Data d;
+            d.type = Data::Type::Number;
+            if ((*m_token) == Token::Type::OperatorMinus)
+            {
+                d.t_number = m_right->execute(std::shared_ptr<VariableManager>␣varManager)->t_number;
+                return d;
+            }
+            return m_right->execute(std::shared_ptr<VariableManager>␣varManager);
+        }
+    };
+
+    class Compount : public Base
     {
-        std::wcout<<m_token->value();
-    }
-};
+    private:
+        std::list<std::shared_ptr<Base> > m_statements;
+    public:
+        Compount()
+        {}
 
+        void append(std::shared_ptr<Base> statement)
+        {
+            m_statements.push_back(statement);
+        }
+
+        virtual void traverse()
+        {
+            std::wcout<<L"Compount: \n";
+            for (auto i = m_statements.begin(); i != m_statements.end(); ++i)
+            {
+                (*i)->traverse();
+                std::wcout<<L"\n";
+            }
+            std::wcout<<L"/Compount\n";
+        }
+
+        virtual Data execute(std::shared_ptr<VariableManager>␣varManager)
+        {
+            for (auto i = m_statements.begin(); i != m_statements.end(); ++i)
+            {
+                (*i)->execute(std::shared_ptr<VariableManager>␣varManager);
+            }
+            return Data();
+        }
+    };
+
+    class Definition : public Base
+    {
+    private:
+        std::shared_ptr<Token> m_type;
+        std::shared_ptr<Base> m_variable;
+        std::shared_ptr<Base> m_initialiser;
+    public:
+        Definition(std::shared_ptr<Token> type, std::shared_ptr<Base> variable, std::shared_ptr<Base> initialiser) :
+            m_type(type),
+            m_variable(variable),
+            m_initialiser(initialiser)
+        {}
+
+        virtual void traverse()
+        {
+            std::wcout<<m_type->name()<<L" ";
+            m_variable->traverse();
+            std::wcout<<" Define ";
+            m_initialiser->traverse();
+        }
+
+        virtual Data execute(std::shared_ptr<VariableManager>␣varManager)
+        {
+            return Data();
+        }
+    };
+
+    class Assignment : public Base
+    {
+    private:
+        std::shared_ptr<Base> m_left;
+        std::shared_ptr<Token> m_token;
+        std::shared_ptr<Base> m_right;
+    public:
+        Assignment(std::shared_ptr<Base> left, std::shared_ptr<Token> token, std::shared_ptr<Base> right) :
+            m_left(left),
+            m_token(token),
+            m_right(right)
+        {}
+
+        virtual void traverse()
+        {
+            std::wcout<<L"(";
+            m_left->traverse();
+            std::wcout<<L" "<<m_token->name()<<L" ";
+            m_right->traverse();
+            std::wcout<<L")";
+        }
+
+        virtual Data execute(std::shared_ptr<VariableManager>␣varManager)
+        {
+            return Data();
+        }
+    };
+
+    class Variable : public Base
+    {
+    private:
+        std::shared_ptr<Token> m_token;
+        std::wstring m_name;
+    public:
+        Variable(std::shared_ptr<Token>(token)) :
+            m_token(token),
+            m_name(token->name())
+        {}
+
+        virtual void traverse()
+        {
+            std::wcout<<L"var: "<<m_token->value();
+        }
+
+        virtual Data execute(std::shared_ptr<VariableManager>␣varManager)
+        {
+            Data d;
+            d.type = Data::Type::String;
+            d.t_string = m_name;
+            return d;
+        }
+    };
+
+    class Number : public Base
+    {
+    private:
+        std::shared_ptr<Token> m_token;
+        double m_number;
+    public:
+        Number(std::shared_ptr<Token>(token)) :
+            m_token(token),
+            m_number(token->toNumber())
+        {}
+
+        virtual  void traverse()
+        {
+            std::wcout<<m_token->value();
+        }
+
+        virtual Data execute(std::shared_ptr<VariableManager>␣varManager)
+        {
+            return Data();
+        }
+    };
+}
 #endif // AST_H
