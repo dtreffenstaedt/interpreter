@@ -21,6 +21,7 @@ static const std::wstring TokenTypeStr[] =
     L"KeywordBool",
     L"KeywordString",
     L"KeywordChar",
+    L"KeywordList",
     L"KeywordTrue",
     L"KeywordFalse",
     L"KeywordImport",
@@ -32,7 +33,7 @@ static const std::wstring TokenTypeStr[] =
     L"KeywordNot", // NOT
     L"String",  // alphanumerical text
     L"Character",
-    L"Literal",
+    L"Identifier",
     L"OperatorPlus", // +
     L"OperatorMinus", // -
     L"OperatorMult", // *
@@ -85,6 +86,7 @@ static const std::wstring KeywordStr[] =
     L"bool",
     L"String",
     L"char",
+    L"List",
     L"true",
     L"false",
     L"import",
@@ -110,6 +112,7 @@ public:
     KeywordNumber,
     KeywordBool,
     KeywordString,
+    KeywordList,
     KeywordChar,
     KeywordTrue,
     KeywordFalse,
@@ -122,7 +125,7 @@ public:
     KeywordNot, // NOT
     String,  // alphanumerical text
     Character,
-    Literal,
+    Identifier,
     OperatorPlus, // +
     OperatorMinus, // -
     OperatorMult, // *

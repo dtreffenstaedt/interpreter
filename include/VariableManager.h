@@ -3,6 +3,7 @@
 
 #include <string>
 #include <map>
+#include <memory>
 
 class VariableManager
 {
@@ -11,38 +12,40 @@ public:
     {
         enum class Type
         {
-            Integer,
-            String,
-            Float,
-            Boolean,
-            Character
+//            Quantity,
+            Number,
+//            Boolean,
+//            String,
+//            Character,
+//            List
         } type;
 
-        std::string name;
+        std::wstring name;
 
-        int t_int;
-        std::string t_str;
-        char t_char;
-        float t_float;
-        bool t_bool;
+//        Quantity t_quantity;
+        double t_number;
+//        std::wstring t_string;
+//        char t_char;
+//        bool t_bool;
+//        std::list<Variable> t_list;
     };
 
 private:
     class Scope
     {
     public:
-        std::map<std::string, Variable*> m_variables;
-        Scope *m_parent;
+        std::map<std::wstring, std::shared_ptr<Variable> > m_variables;
+        std::shared_ptr<Scope> m_parent;
 
-        explicit Scope(Scope *p) :
+        explicit Scope(std::shared_ptr<Scope> p) :
             m_parent(p)
         {}
 
         explicit Scope() :
-            m_parent(0)
+            m_parent(nullptr)
         {}
 
-        bool insert(Variable* v)
+        bool insert(std::shared_ptr<Variable> v)
         {
             if (defined(v->name))
             {
@@ -52,50 +55,59 @@ private:
             return true;
         }
 
-        bool defined(std::string name)
+        bool defined(std::wstring name)
         {
-            if (!m_parent)
+            if ((m_variables.find(name) != m_variables.end()))
             {
-                return (m_variables.find(name) != m_variables.end());
+                return true;
             }
-            return (m_variables.find(name) != m_variables.end()) || (m_parent->defined(name));
+            if (m_parent)
+            {
+                return (m_parent->defined(name));
+            }
+            return false;
         }
 
-        Variable* variable(std::string name)
+        std::shared_ptr<Variable> variable(std::wstring name)
         {
             if (m_variables.find(name) == m_variables.end())
             {
-                return 0;
+                return nullptr;
             }
             return m_variables[name];
         }
+    };
 
-        ~Scope()
-        {
-            for (std::map<std::string, Variable*>::iterator i = m_variables.end(); i != m_variables.end(); ++i)
-            {
-                delete (i->second);
-            }
-        }
-    } *m_scope;
+    std::shared_ptr<Scope> m_scope;
 
 public:
-    bool create(std::string name, int value);
-    bool create(std::string name, bool value);
+    bool create(std::wstring name, const double value);
+    bool assign(std::wstring name, const double value);
+    bool value(std::wstring name, double& value);
+/*    bool create(std::wstring name, Number value);
+    bool create(std::wstring name, Quantity value);
+    bool create(std::wstring name, bool value);
+    bool create(std::wstring name, wchar_t value);
+    bool create(std::wstring name, std::list<Variable> value);
+    bool create(std::wstring name, std::wstring value);
 
-    bool create(std::string name, std::string value);
+    bool assign(std::wstring name, Number value);
+    bool assign(std::wstring name, Quantity value);
+    bool assign(std::wstring name, bool value);
+    bool assign(std::wstring name, wchar_t value);
+    bool assing(std::wstring name, std::list<Variable> value);
+    bool assing(std::wstring name, std::wstring value);
 
-    bool create(std::string name, float value);
+    bool value(std::wstring name, Number& value);
+    bool value(std::wstring name, Quantity& value);
+    bool value(std::wstring name, bool& value);
+    bool value(std::wstring name, wchar_t& value);
+    bool value(std::wstring name, std::list<Variable>& value);
+    bool value(std::wstring name, std::wstring& value);
+*/
+    bool defined(std::wstring name) const;
 
-    bool defined(std::string name) const;
-
-    Variable::Type type(std::string name) const;
-    bool value(std::string name, int &value) const;
-
-    bool value(std::string name, float &value) const;
-    bool value(std::string name, bool &value) const;
-
-    bool value(std::string name, std::string &value) const;
+    Variable::Type type(std::wstring name) const;
 
     void newScope();
 
