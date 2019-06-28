@@ -231,7 +231,7 @@ Token Scanner::nextToken()
                 return Token(p, (Token::Type) i);
             }
         }
-        return Token(p, Token::Type::Literal, buf);
+        return Token(p, Token::Type::Identifier, buf);
     }
     if (isdigit(m_char, m_locale))
     {
