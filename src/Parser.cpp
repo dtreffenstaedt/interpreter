@@ -11,7 +11,7 @@ Parser::Parser(const char* input) :
 
 std::shared_ptr<AST::Base> Parser::parse()
 {
-    std::shared_ptr<AST::Compount> root = std::make_shared<AST::Compount>(AST::Compount(Position{1,1}));
+    std::shared_ptr<AST::Compound> root = std::make_shared<AST::Compound>(AST::Compound(Position{1,1}));
     while ((*m_currentToken) != Token::Type::End)
     {
         root->append(statement());
@@ -20,9 +20,9 @@ std::shared_ptr<AST::Base> Parser::parse()
     return root;
 }
 
-std::shared_ptr<AST::Base> Parser::compountStatement()
+std::shared_ptr<AST::Base> Parser::compoundStatement()
 {
-    std::shared_ptr<AST::Compount> root = std::make_shared<AST::Compount>(AST::Compount(m_currentToken->pos()));
+    std::shared_ptr<AST::Compound> root = std::make_shared<AST::Compound>(AST::Compound(m_currentToken->pos()));
     eat(Token::Type::LBrace);
     while ((*m_currentToken) != Token::Type::RBrace)
     {
@@ -36,7 +36,7 @@ std::shared_ptr<AST::Base> Parser::statement()
 {
     if ((*m_currentToken) == Token::Type::LBrace)
     {
-        return compountStatement();
+        return compoundStatement();
     }
     else if ((*m_currentToken) == Token::Type::Identifier)
     {

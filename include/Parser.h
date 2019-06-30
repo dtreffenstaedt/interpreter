@@ -60,7 +60,7 @@ private:
         throw UnexpectedToken((*m_currentToken), Token({1,1}, tokenType));
     }
 
-    std::shared_ptr<AST::Base> compountStatement();
+    std::shared_ptr<AST::Base> compoundStatement();
 
     std::shared_ptr<AST::Base> statement();
 

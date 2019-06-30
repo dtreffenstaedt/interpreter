@@ -1,7 +1,6 @@
 #include "Token.h"
 
 
-
 Token::Token(Position pos, Token::Type t, std::wstring value) :
     m_type(std::move(t)),
     m_value(std::move(value)),
