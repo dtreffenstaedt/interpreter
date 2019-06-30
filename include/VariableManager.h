@@ -6,53 +6,8 @@
 #include <memory>
 #include <iostream>
 
-class VariableUndefined : public std::exception
-{
-private:
-    std::wstring name;
 
-public:
-    VariableUndefined(std::wstring n) :
-        name(n)
-    {}
-
-    void print()
-    {
-        std::wstring buf;
-        buf = L"Variable not defined: ";
-        buf += name;
-        std::wcerr<<buf;
-    }
-
-    const char* what() const throw()
-    {
-        return "Variable not defined.";
-    }
-};
-
-class VariableExists : public std::exception
-{
-private:
-    std::wstring name;
-
-public:
-    VariableExists(std::wstring n) :
-        name(n)
-    {}
-
-    void print()
-    {
-        std::wstring buf;
-        buf = L"Variable already exists: ";
-        buf += name;
-        std::wcerr<<buf;
-    }
-
-    const char* what() const throw()
-    {
-        return "Variable already exists.";
-    }
-};
+#include "Exceptions.h"
 
 class VariableManager
 {

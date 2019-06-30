@@ -8,6 +8,7 @@
 #include "Token.h"
 #include "VariableManager.h"
 
+
 struct Data
 {
     enum class Type
@@ -47,9 +48,11 @@ namespace AST
             Number
         } type = Type::Empty;
 
+        Position position;
+
         virtual void traverse() = 0;
         virtual Data execute(std::shared_ptr<VariableManager>, Data d = Data()) = 0;
-        explicit Base(Type t = Type::Empty) :
+        explicit Base(Type t = Type::Empty, Position pos = {1,1}) :
             type(t)
         {}
     };
@@ -57,8 +60,8 @@ namespace AST
     class Empty : public Base
     {
     public:
-        explicit Empty() :
-            Base(Type::Empty)
+        explicit Empty(Position pos) :
+            Base(Type::Empty, pos)
         {}
 
         virtual void traverse()
@@ -77,8 +80,8 @@ namespace AST
         std::shared_ptr<Token> m_token;
         std::shared_ptr<Base> m_right;
     public:
-        BinaryOperation(std::shared_ptr<Base> left, std::shared_ptr<Token> token, std::shared_ptr<Base> right) :
-            Base(Type::BinaryOperation),
+        BinaryOperation(std::shared_ptr<Base> left, std::shared_ptr<Token> token, std::shared_ptr<Base> right, Position pos) :
+            Base(Type::BinaryOperation, pos),
             m_left(left),
             m_token(token),
             m_right(right)
@@ -140,8 +143,8 @@ namespace AST
         std::shared_ptr<Token> m_token;
         std::shared_ptr<Base> m_expression;
     public:
-        UnaryOperation(std::shared_ptr<Token> token, std::shared_ptr<Base> expression) :
-            Base(Type::UnaryOperation),
+        UnaryOperation(std::shared_ptr<Token> token, std::shared_ptr<Base> expression, Position pos) :
+            Base(Type::UnaryOperation, pos),
             m_token(token),
             m_expression(expression)
         {}
@@ -177,8 +180,8 @@ namespace AST
     private:
         std::list<std::shared_ptr<Base> > m_statements;
     public:
-        Compount() :
-            Base(Type::Compount)
+        Compount(Position pos) :
+            Base(Type::Compount, pos)
         {}
 
         void append(std::shared_ptr<Base> statement)
@@ -216,8 +219,8 @@ namespace AST
         std::shared_ptr<Base> m_variable;
         std::shared_ptr<Base> m_initialiser;
     public:
-        Definition(std::shared_ptr<Token> type, std::shared_ptr<Base> variable, std::shared_ptr<Base> initialiser) :
-            Base(Type::Definition),
+        Definition(std::shared_ptr<Token> type, std::shared_ptr<Base> variable, std::shared_ptr<Base> initialiser, Position pos) :
+            Base(Type::Definition, pos),
             m_type(type),
             m_variable(variable),
             m_initialiser(initialiser)
@@ -248,8 +251,8 @@ namespace AST
         std::shared_ptr<Token> m_token;
         std::shared_ptr<Base> m_right;
     public:
-        Assignment(std::shared_ptr<Base> left, std::shared_ptr<Token> token, std::shared_ptr<Base> right) :
-            Base(Type::Assignment),
+        Assignment(std::shared_ptr<Base> left, std::shared_ptr<Token> token, std::shared_ptr<Base> right, Position pos) :
+            Base(Type::Assignment, pos),
             m_left(left),
             m_token(token),
             m_right(right)
@@ -276,8 +279,8 @@ namespace AST
         std::shared_ptr<Token> m_token;
         std::wstring m_name;
     public:
-        Variable(std::shared_ptr<Token>(token)) :
-            Base(Type::Variable),
+        Variable(std::shared_ptr<Token>(token), Position pos) :
+            Base(Type::Variable, pos),
             m_token(token),
             m_name(token->value())
         {}
@@ -312,8 +315,8 @@ namespace AST
         std::shared_ptr<Token> m_token;
         double m_number;
     public:
-        Number(std::shared_ptr<Token>(token)) :
-            Base(Type::Number),
+        Number(std::shared_ptr<Token>(token), Position pos) :
+            Base(Type::Number, pos),
             m_token(token),
             m_number(token->toNumber())
         {}

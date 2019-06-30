@@ -23,8 +23,7 @@ LIBRARIES=$(patsubst %, -L%,$(LIBS))
 INCLUDE=$(patsubst %,-I%,$(INCLUDEDIRS))
 
 
-all: debug
-all: release
+all: debug release
 
 release: CXXFLAGS += -O3
 release: TARGETFILES = $(BINDIR)/Release/$(TARGET)

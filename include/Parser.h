@@ -2,59 +2,15 @@
 #define PARSER_H
 
 #include <memory>
-#include <exception>
 #include <iostream>
 #include <cmath>
-#include <codecvt>
 
-
+#include "Exceptions.h"
 #include "Scanner.h"
 #include "Token.h"
 #include "Queue.h"
 #include "AST.h"
 
-class UnexpectedToken : public std::exception
-{
-private:
-    Token token;
-    Token expected;
-
-public:
-    UnexpectedToken(Token to, Token exp) :
-        token(to),
-        expected(exp)
-    {}
-
-    void print()
-    {
-        std::wstring buf;
-        buf = L"Unexpected Token: ";
-        buf += token.name();
-        buf += L" (expected:";
-        buf += expected.name();
-        buf += L")";
-        buf += L"\n\tat ";
-        buf += std::to_wstring(token.pos().row);
-        buf += L":";
-        buf += std::to_wstring(token.pos().col);
-        buf += L"\n";
-        std::wcerr<<buf;
-    }
-
-    const char* what() const throw()
-    {
-        std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-        std::string buf;
-        buf = "Unexpected Token: ";
-        buf += converter.to_bytes(token.name());
-        buf += "\n\tat ";
-        buf += std::to_string(token.pos().row);
-        buf += ":";
-        buf += std::to_string(token.pos().col);
-        buf += "\n";
-        return buf.c_str();
-    }
-};
 
 class Parser
 {
@@ -101,8 +57,8 @@ private:
 
     inline std::shared_ptr<AST::Base> compountStatement()
     {
+        std::shared_ptr<AST::Compount> root = std::make_shared<AST::Compount>(AST::Compount(m_currentToken->pos()));
         eat(Token::Type::LBrace);
-        std::shared_ptr<AST::Compount> root = std::make_shared<AST::Compount>(AST::Compount());
         while ((*m_currentToken) != Token::Type::RBrace)
         {
             root->append(statement());
@@ -135,7 +91,7 @@ private:
             eat(Token::Type::Semicolon);
             return def;
         }
-        return std::make_shared<AST::Empty>(AST::Empty());
+        return std::make_shared<AST::Empty>(AST::Empty(m_currentToken->pos()));
     }
 
     inline std::shared_ptr<AST::Base> definition()
@@ -166,17 +122,17 @@ private:
         if ((*m_currentToken) == Token::Type::OperatorAssign)
         {
             eat(Token::Type::OperatorAssign);
-            return std::make_shared<AST::Definition>(AST::Definition(t, std::make_shared<AST::Variable>(AST::Variable(name)), expression()));
+            return std::make_shared<AST::Definition>(AST::Definition(t, std::make_shared<AST::Variable>(AST::Variable(name, name->pos())), expression(), t->pos()));
         }
         else
         {
-            return std::make_shared<AST::Definition>(AST::Definition(t, std::make_shared<AST::Variable>(AST::Variable(name)), std::make_shared<AST::Empty>(AST::Empty())));
+            return std::make_shared<AST::Definition>(AST::Definition(t, std::make_shared<AST::Variable>(AST::Variable(name, name->pos())), std::make_shared<AST::Empty>(AST::Empty(name->pos())), t->pos()));
         }
     }
 
     inline std::shared_ptr<AST::Base> variable()
     {
-       std::shared_ptr<AST::Base> var = std::make_shared<AST::Variable>(AST::Variable(m_currentToken));
+       std::shared_ptr<AST::Base> var = std::make_shared<AST::Variable>(AST::Variable(m_currentToken, m_currentToken->pos()));
        eat(Token::Type::Identifier);
        return var;
     }
@@ -205,7 +161,7 @@ private:
         {
             eat(Token::Type::OperatorDivAssign);
         }
-        return std::make_shared<AST::Assignment>(AST::Assignment(var,t,expression()));
+        return std::make_shared<AST::Assignment>(AST::Assignment(var,t,expression(), t->pos()));
     }
 
     inline std::shared_ptr<AST::Base> factor()
@@ -215,18 +171,18 @@ private:
         if ((*f) == Token::Type::Number)
         {
             eat(Token::Type::Number);
-            return std::make_shared<AST::Number>(AST::Number(f));
+            return std::make_shared<AST::Number>(AST::Number(f, f->pos()));
         }
         else if ((*f) == Token::Type::OperatorPlus)
         {
             eat(Token::Type::OperatorPlus);
-            std::shared_ptr<AST::Base> result = std::make_shared<AST::UnaryOperation>(AST::UnaryOperation(f, factor()));
+            std::shared_ptr<AST::Base> result = std::make_shared<AST::UnaryOperation>(AST::UnaryOperation(f, factor(), f->pos()));
             return result;
         }
         if ((*f) == Token::Type::OperatorMinus)
         {
             eat(Token::Type::OperatorMinus);
-            std::shared_ptr<AST::Base> result = std::make_shared<AST::UnaryOperation>(AST::UnaryOperation(f, factor()));
+            std::shared_ptr<AST::Base> result = std::make_shared<AST::UnaryOperation>(AST::UnaryOperation(f, factor(), f->pos()));
             return result;
         }
         else if ((*f) == Token::Type::LParen)
@@ -247,7 +203,7 @@ private:
         {
             std::shared_ptr<Token> t = m_currentToken;
             eat(Token::Type::OperatorExp);
-            result = std::make_shared<AST::BinaryOperation>(AST::BinaryOperation(result, t, factor()));
+            result = std::make_shared<AST::BinaryOperation>(AST::BinaryOperation(result, t, factor(), t->pos()));
         }
         return result;
     }
@@ -267,7 +223,7 @@ private:
             {
                 eat(Token::Type::OperatorDiv);
             }
-            result = std::make_shared<AST::BinaryOperation>(AST::BinaryOperation(result, t, exponent()));
+            result = std::make_shared<AST::BinaryOperation>(AST::BinaryOperation(result, t, exponent(), t->pos()));
         }
         return result;
     }
@@ -287,7 +243,7 @@ private:
             {
                 eat(Token::Type::OperatorMinus);
             }
-            result = std::make_shared<AST::BinaryOperation>(AST::BinaryOperation(result, t, term()));
+            result = std::make_shared<AST::BinaryOperation>(AST::BinaryOperation(result, t, term(), t->pos()));
         }
         return result;
     }
@@ -304,7 +260,7 @@ public:
 
     std::shared_ptr<AST::Base> parse()
     {
-        std::shared_ptr<AST::Compount> root = std::make_shared<AST::Compount>(AST::Compount());
+        std::shared_ptr<AST::Compount> root = std::make_shared<AST::Compount>(AST::Compount(Position{1,1}));
         while ((*m_currentToken) != Token::Type::End)
         {
             root->append(statement());
