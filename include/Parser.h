@@ -103,14 +103,8 @@ private:
     {
         eat(Token::Type::LBrace);
         std::shared_ptr<AST::Compount> root = std::make_shared<AST::Compount>(AST::Compount());
-        root->append(statement());
-        while ((*m_currentToken) == Token::Type::Semicolon)
+        while ((*m_currentToken) != Token::Type::RBrace)
         {
-            eat(Token::Type::Semicolon);
-            if ((*m_currentToken) == Token::Type::RBrace)
-            {
-                break;
-            }
             root->append(statement());
         }
         eat(Token::Type::RBrace);
@@ -125,7 +119,9 @@ private:
         }
         else if ((*m_currentToken) == Token::Type::Identifier)
         {
-            return assignment();
+            std::shared_ptr<AST::Base> assign = assignment();
+            eat(Token::Type::Semicolon);
+            return assign;
         }
         else if (
             (*m_currentToken) == Token::Type::KeywordQuantity ||
@@ -135,7 +131,9 @@ private:
             (*m_currentToken) == Token::Type::KeywordChar
         )
         {
-            return definition();
+            std::shared_ptr<AST::Base> def = definition();
+            eat(Token::Type::Semicolon);
+            return def;
         }
         return std::make_shared<AST::Empty>(AST::Empty());
     }
@@ -306,9 +304,13 @@ public:
 
     std::shared_ptr<AST::Base> parse()
     {
-        std::shared_ptr<AST::Base> result = statement();
+        std::shared_ptr<AST::Compount> root = std::make_shared<AST::Compount>(AST::Compount());
+        while ((*m_currentToken) != Token::Type::End)
+        {
+            root->append(statement());
+        }
         eat(Token::Type::End);
-        return result;
+        return root;
     }
 };
 
