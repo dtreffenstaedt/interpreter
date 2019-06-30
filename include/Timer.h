@@ -5,7 +5,7 @@
 
 class Timer
 {
-private:
+public:
     std::chrono::high_resolution_clock::time_point m_last;
     std::chrono::duration<double> m_elapsed;
 
@@ -13,26 +13,24 @@ private:
     {
         return std::chrono::high_resolution_clock::now();
     }
-
-public:
-    void restart()
+    inline void restart()
     {
         m_last = now();
     }
 
-    void stop()
+    inline void stop()
     {
         m_elapsed = now() - m_last;
     }
    
     template <typename T>
-    std::chrono::duration<double> elapsed()
+    inline std::chrono::duration<double> elapsed()
     {
         return std::chrono::duration_cast<T>(m_elapsed);
     }
 
     template <typename T>
-    double count()
+    inline double count()
     {
         stop();
         auto el = elapsed<T>();
