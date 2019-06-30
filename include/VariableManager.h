@@ -4,6 +4,55 @@
 #include <string>
 #include <map>
 #include <memory>
+#include <iostream>
+
+class VariableUndefined : public std::exception
+{
+private:
+    std::wstring name;
+
+public:
+    VariableUndefined(std::wstring n) :
+        name(n)
+    {}
+
+    void print()
+    {
+        std::wstring buf;
+        buf = L"Variable not defined: ";
+        buf += name;
+        std::wcerr<<buf;
+    }
+
+    const char* what() const throw()
+    {
+        return "Variable not defined.";
+    }
+};
+
+class VariableExists : public std::exception
+{
+private:
+    std::wstring name;
+
+public:
+    VariableExists(std::wstring n) :
+        name(n)
+    {}
+
+    void print()
+    {
+        std::wstring buf;
+        buf = L"Variable already exists: ";
+        buf += name;
+        std::wcerr<<buf;
+    }
+
+    const char* what() const throw()
+    {
+        return "Variable already exists.";
+    }
+};
 
 class VariableManager
 {
@@ -72,7 +121,11 @@ private:
         {
             if (m_variables.find(name) == m_variables.end())
             {
-                return nullptr;
+                if (m_parent)
+                {
+                    return m_parent->variable(name);
+                }
+                throw VariableUndefined(name);
             }
             return m_variables[name];
         }
@@ -81,7 +134,7 @@ private:
     std::shared_ptr<Scope> m_scope;
 
 public:
-    bool create(std::wstring name, const double value);
+    bool create(std::wstring name, Variable::Type t = Variable::Type::Number);
     bool assign(std::wstring name, const double value);
     bool value(std::wstring name, double& value);
 /*    bool create(std::wstring name, Number value);
@@ -109,7 +162,7 @@ public:
 
     Variable::Type type(std::wstring name) const;
 
-    void newScope();
+    void enterScope();
 
     void leaveScope();
 };
