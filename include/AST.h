@@ -18,11 +18,12 @@ struct Data
         String,
 //            Character,
 //            List
-        Void
+        Void,
+        Definition
     } type = Type::Void;
 
 //        Quantity t_quantity;
-    double t_number;
+    double t_number = 0;
     std::wstring t_string;
 //        char t_char;
 //        bool t_bool;
@@ -34,20 +35,36 @@ namespace AST
     class Base
     {
     public:
+        enum class Type
+        {
+            Empty,
+            BinaryOperation,
+            UnaryOperation,
+            Compount,
+            Definition,
+            Assignment,
+            Variable,
+            Number
+        } type = Type::Empty;
+
         virtual void traverse() = 0;
-        virtual Data execute(std::shared_ptr<VariableManager>) = 0;
+        virtual Data execute(std::shared_ptr<VariableManager>, Data d = Data()) = 0;
+        explicit Base(Type t = Type::Empty) :
+            type(t)
+        {}
     };
 
     class Empty : public Base
     {
     public:
-        explicit Empty()
+        explicit Empty() :
+            Base(Type::Empty)
         {}
 
         virtual void traverse()
         {}
 
-        virtual Data execute(std::shared_ptr<VariableManager> varManager)
+        virtual Data execute(std::shared_ptr<VariableManager> varManager, Data d)
         {
             return Data();
         }
@@ -61,6 +78,7 @@ namespace AST
         std::shared_ptr<Base> m_right;
     public:
         BinaryOperation(std::shared_ptr<Base> left, std::shared_ptr<Token> token, std::shared_ptr<Base> right) :
+            Base(Type::BinaryOperation),
             m_left(left),
             m_token(token),
             m_right(right)
@@ -75,41 +93,42 @@ namespace AST
             std::wcout<<L")";
         }
 
-        virtual Data execute(std::shared_ptr<VariableManager> varManager)
+        virtual Data execute(std::shared_ptr<VariableManager> varManager, Data d)
         {
-            Data d;
-            d.type = Data::Type::Number;
-            Data left = m_left->execute(std::shared_ptr<VariableManager>␣varManager);
-            Data right = m_right->execute(std::shared_ptr<VariableManager>␣varManager);
+            Data val;
+            val.type = Data::Type::Number;
+
+            Data left = m_left->execute(varManager);
+            Data right = m_right->execute(varManager);
             if (left.type != Data::Type::Number || right.type != Data::Type::Number)
             {
                 // TODO throw wrong operand Type.
                 return Data();
             }
-            if ((*m_token) == Token::Type::OperationMult)
+            if ((*m_token) == Token::Type::OperatorMult)
             {
-                d.t_number = left.t_number * right.t_number;
-                return d;
+                val.t_number = left.t_number * right.t_number;
+                return val;
             }
-            if ((*m_token) == Token::Type::OperationDiv)
+            if ((*m_token) == Token::Type::OperatorDiv)
             {
-                d.t_number = left.t_number / right.t_number;
-                return d;
+                val.t_number = left.t_number / right.t_number;
+                return val;
             }
-            if ((*m_token) == Token::Type::OperationPlus)
+            if ((*m_token) == Token::Type::OperatorPlus)
             {
-                d.t_number = left.t_number + right.t_number;
-                return d;
+                val.t_number = left.t_number + right.t_number;
+                return val;
             }
-            if ((*m_token) == Token::Type::OperationMinus)
+            if ((*m_token) == Token::Type::OperatorMinus)
             {
-                d.t_number = left.t_number - right.t_number;
-                return d;
+                val.t_number = left.t_number - right.t_number;
+                return val;
             }
-            if ((*m_token) == Token::Type::OperationExp)
+            if ((*m_token) == Token::Type::OperatorExp)
             {
-                d.t_number = pow(left.t_number, right.t_number);
-                return d;
+                val.t_number = pow(left.t_number, right.t_number);
+                return val;
             }
             return Data();
         }
@@ -122,6 +141,7 @@ namespace AST
         std::shared_ptr<Base> m_expression;
     public:
         UnaryOperation(std::shared_ptr<Token> token, std::shared_ptr<Base> expression) :
+            Base(Type::UnaryOperation),
             m_token(token),
             m_expression(expression)
         {}
@@ -134,16 +154,21 @@ namespace AST
             std::wcout<<L")";
         }
 
-        virtual Data execute(std::shared_ptr<VariableManager> varManager)
+        virtual Data execute(std::shared_ptr<VariableManager> varManager, Data d)
         {
-            Data d;
-            d.type = Data::Type::Number;
+            Data val;
+            val.type = Data::Type::Number;
             if ((*m_token) == Token::Type::OperatorMinus)
             {
-                d.t_number = m_right->execute(std::shared_ptr<VariableManager>␣varManager)->t_number;
-                return d;
+                Data expr = m_expression->execute(varManager);
+                if (expr.type != Data::Type::Number)
+                {
+                    return Data();
+                }
+                val.t_number = - expr.t_number;
+                return val;
             }
-            return m_right->execute(std::shared_ptr<VariableManager>␣varManager);
+            return m_expression->execute(varManager);
         }
     };
 
@@ -152,7 +177,8 @@ namespace AST
     private:
         std::list<std::shared_ptr<Base> > m_statements;
     public:
-        Compount()
+        Compount() :
+            Base(Type::Compount)
         {}
 
         void append(std::shared_ptr<Base> statement)
@@ -171,12 +197,14 @@ namespace AST
             std::wcout<<L"/Compount\n";
         }
 
-        virtual Data execute(std::shared_ptr<VariableManager>␣varManager)
+        virtual Data execute(std::shared_ptr<VariableManager> varManager, Data d)
         {
+            varManager->enterScope();
             for (auto i = m_statements.begin(); i != m_statements.end(); ++i)
             {
-                (*i)->execute(std::shared_ptr<VariableManager>␣varManager);
+                (*i)->execute(varManager);
             }
+            varManager->leaveScope();
             return Data();
         }
     };
@@ -189,6 +217,7 @@ namespace AST
         std::shared_ptr<Base> m_initialiser;
     public:
         Definition(std::shared_ptr<Token> type, std::shared_ptr<Base> variable, std::shared_ptr<Base> initialiser) :
+            Base(Type::Definition),
             m_type(type),
             m_variable(variable),
             m_initialiser(initialiser)
@@ -202,8 +231,12 @@ namespace AST
             m_initialiser->traverse();
         }
 
-        virtual Data execute(std::shared_ptr<VariableManager>␣varManager)
+        virtual Data execute(std::shared_ptr<VariableManager> varManager, Data d)
         {
+            Data def;
+            def.type = Data::Type::Definition;
+            m_variable->execute(varManager, def);
+            m_variable->execute(varManager, m_initialiser->execute(varManager));
             return Data();
         }
     };
@@ -216,6 +249,7 @@ namespace AST
         std::shared_ptr<Base> m_right;
     public:
         Assignment(std::shared_ptr<Base> left, std::shared_ptr<Token> token, std::shared_ptr<Base> right) :
+            Base(Type::Assignment),
             m_left(left),
             m_token(token),
             m_right(right)
@@ -230,9 +264,9 @@ namespace AST
             std::wcout<<L")";
         }
 
-        virtual Data execute(std::shared_ptr<VariableManager>␣varManager)
+        virtual Data execute(std::shared_ptr<VariableManager> varManager, Data d)
         {
-            return Data();
+            return m_left->execute(varManager, m_right->execute(varManager));
         }
     };
 
@@ -243,8 +277,9 @@ namespace AST
         std::wstring m_name;
     public:
         Variable(std::shared_ptr<Token>(token)) :
+            Base(Type::Variable),
             m_token(token),
-            m_name(token->name())
+            m_name(token->value())
         {}
 
         virtual void traverse()
@@ -252,12 +287,22 @@ namespace AST
             std::wcout<<L"var: "<<m_token->value();
         }
 
-        virtual Data execute(std::shared_ptr<VariableManager>␣varManager)
+        virtual Data execute(std::shared_ptr<VariableManager> varManager, Data d)
         {
-            Data d;
-            d.type = Data::Type::String;
-            d.t_string = m_name;
-            return d;
+            if (d.type == Data::Type::Void)
+            {
+                Data val;
+                val.type = Data::Type::Number;
+                varManager->value(m_name, val.t_number);
+                return val;
+            }
+            else if (d.type == Data::Type::Definition)
+            {
+                varManager->create(m_name);
+                return Data();
+            }
+            varManager->assign(m_name, d.t_number);
+            return Data();
         }
     };
 
@@ -268,6 +313,7 @@ namespace AST
         double m_number;
     public:
         Number(std::shared_ptr<Token>(token)) :
+            Base(Type::Number),
             m_token(token),
             m_number(token->toNumber())
         {}
@@ -277,9 +323,12 @@ namespace AST
             std::wcout<<m_token->value();
         }
 
-        virtual Data execute(std::shared_ptr<VariableManager>␣varManager)
+        virtual Data execute(std::shared_ptr<VariableManager> varManager, Data d)
         {
-            return Data();
+            Data val;
+            val.type = Data::Type::Number;
+            val.t_number = m_number;
+            return val;
         }
     };
 }
