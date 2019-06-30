@@ -5,8 +5,8 @@ LIBS =
 
 INCLUDEDIRS = include
 
-SOURCEFILES = main.cpp Scanner.cpp VariableManager.cpp Token.cpp
-HEADERFILES = Token.h Scanner.h VariableManager.h Queue.h Timer.h
+SOURCEFILES = main.cpp Scanner.cpp VariableManager.cpp Token.cpp Parser.cpp AST.cpp
+HEADERFILES = Token.h Scanner.h VariableManager.h Queue.h Timer.h Parser.h AST.h
 
 SOURCEDIR = src
 HEADERDIR = include
