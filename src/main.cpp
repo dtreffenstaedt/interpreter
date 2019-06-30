@@ -24,7 +24,8 @@ int main(int argc, char* argv[])
     tim.restart();
     try
     {
-        p.parse()->traverse();
+        std::shared_ptr<AST::Base> root = p.parse();
+        root->execute(std::make_shared<VariableManager>(VariableManager()));
     }
     catch (UnexpectedToken& e)
     {
