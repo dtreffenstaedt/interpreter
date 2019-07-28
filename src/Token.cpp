@@ -37,22 +37,42 @@ Position Token::pos() const
     return m_pos;
 }
 
-bool Token::operator==(Token &other) const
+bool Token::operator==(const Token& other) const
 {
     return (other.m_type == m_type && m_value == m_value);
 }
 
-bool Token::operator!=(Token &other) const
+bool Token::operator!=(const Token& other) const
 {
     return (other.m_type != m_type || m_value != m_value);
 }
 
-bool Token::operator==(Token::Type t) const
+bool Token::operator==(const Token::Type& t) const
 {
     return (t == m_type);
 }
 
-bool Token::operator!=(Token::Type t) const
+bool Token::operator>=(const Type& t) const
+{
+    return (t >= m_type);
+}
+
+bool Token::operator<=(const Type& t) const
+{
+    return (t <= m_type);
+}
+
+bool Token::operator>(const Type& t) const
+{
+    return (t > m_type);
+}
+
+bool Token::operator<(const Type& t) const
+{
+    return (t < m_type);
+}
+
+bool Token::operator!=(const Token::Type& t) const
 {
     return (t != m_type);
 }

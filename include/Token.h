@@ -20,13 +20,13 @@ static const std::wstring TokenTypeStr[] =
     L"KeywordNumber",
     L"KeywordBool",
     L"KeywordString",
-    L"KeywordChar",
     L"KeywordList",
+    L"KeywordChar",
+    L"KeywordVoid",
     L"KeywordTrue",
     L"KeywordFalse",
     L"KeywordImport",
     L"KeywordExport",
-    L"KeywordVoid",
     L"KeywordReturn",
     L"KeywordAnd", // AND
     L"KeywordOr", // OR
@@ -96,8 +96,8 @@ static const std::wstring KeywordStr[] =
     L"AND",
     L"OR",
     L"NOT"
-};  
-    
+};
+
 class Token
 {   
 public:
@@ -114,11 +114,11 @@ public:
     KeywordString,
     KeywordList,
     KeywordChar,
+    KeywordVoid,
     KeywordTrue,
     KeywordFalse,
     KeywordImport,
     KeywordExport,
-    KeywordVoid,
     KeywordReturn,
     KeywordAnd, // AND
     KeywordOr, // OR
@@ -184,13 +184,18 @@ public:
 
     Position pos() const;
 
-    bool operator==(Token &other) const;
+    bool operator==(const Token& other) const;
 
-    bool operator!=(Token &other) const;
+    bool operator!=(const Token& other) const;
 
-    bool operator==(Type t) const;
+    bool operator==(const Type& t) const;
 
-    bool operator!=(Type t) const;
+    bool operator>=(const Type& t) const;
+    bool operator<=(const Type& t) const;
+    bool operator>(const Type& t) const;
+    bool operator<(const Type& t) const;
+
+    bool operator!=(const Type& t) const;
 };
 
 #endif //TOKEN_H

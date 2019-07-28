@@ -7,6 +7,8 @@
 #include "Parser.h"
 #include "Timer.h"
 
+#include "FunctionManager.h"
+
 int main(int argc, char* argv[])
 {   
     std::setlocale(LC_ALL, "en_US.UTF8");
@@ -25,7 +27,7 @@ int main(int argc, char* argv[])
     try
     {
         std::shared_ptr<AST::Base> root = p.parse();
-        root->execute(std::make_shared<VariableManager>(VariableManager()));
+        root->execute(std::make_shared<FunctionManager>(FunctionManager()), std::make_shared<VariableManager>(VariableManager()));
     }
     catch (UnexpectedToken& e)
     {
