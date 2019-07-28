@@ -3,6 +3,8 @@
 #include <iostream>
 #include <cmath>
 
+#include "FunctionManager.h"
+
 namespace AST
 {
     Empty::Empty(Position pos) :
@@ -12,7 +14,7 @@ namespace AST
     void Empty::print()
     {}
 
-    Data Empty::execute(std::shared_ptr<VariableManager> varManager, Data d)
+    Data Empty::execute(std::shared_ptr<FunctionManager> fnManager, std::shared_ptr<VariableManager> varManager, Data d)
     {
         return Data();
     }
@@ -33,13 +35,13 @@ namespace AST
         std::wcout<<L")";
     }
 
-    Data BinaryOperation::execute(std::shared_ptr<VariableManager> varManager, Data d)
+    Data BinaryOperation::execute(std::shared_ptr<FunctionManager> fnManager, std::shared_ptr<VariableManager> varManager, Data d)
     {
         Data val;
         val.type = Data::Type::Number;
 
-        Data left = m_left->execute(varManager);
-        Data right = m_right->execute(varManager);
+        Data left = m_left->execute(fnManager, varManager);
+        Data right = m_right->execute(fnManager, varManager);
         if (left.type != Data::Type::Number || right.type != Data::Type::Number)
         {
             // TODO throw wrong operand Type.
@@ -87,13 +89,13 @@ namespace AST
         std::wcout<<L")";
     }
 
-    Data UnaryOperation::execute(std::shared_ptr<VariableManager> varManager, Data d)
+    Data UnaryOperation::execute(std::shared_ptr<FunctionManager> fnManager, std::shared_ptr<VariableManager> varManager, Data d)
     {
         Data val;
         val.type = Data::Type::Number;
         if ((*m_token) == Token::Type::OperatorMinus)
         {
-            Data expr = m_expression->execute(varManager);
+            Data expr = m_expression->execute(fnManager, varManager);
             if (expr.type != Data::Type::Number)
             {
                 return Data();
@@ -101,7 +103,7 @@ namespace AST
             val.t_number = - expr.t_number;
             return val;
         }
-        return m_expression->execute(varManager);
+        return m_expression->execute(fnManager, varManager);
     }
 
     Compound::Compound(Position pos) :
@@ -124,25 +126,25 @@ namespace AST
         std::wcout<<L"/Compound\n";
     }
 
-    Data Compound::execute(std::shared_ptr<VariableManager> varManager, Data d)
+    Data Compound::execute(std::shared_ptr<FunctionManager> fnManager, std::shared_ptr<VariableManager> varManager, Data d)
     {
         varManager->enterScope();
         for (auto i = m_statements.begin(); i != m_statements.end(); ++i)
         {
-            (*i)->execute(varManager);
+            (*i)->execute(fnManager, varManager);
         }
         varManager->leaveScope();
         return Data();
     }
 
-    Definition::Definition(std::shared_ptr<Token> type, std::shared_ptr<Base> variable, std::shared_ptr<Base> initialiser, Position pos) :
-        Base(Type::Definition, pos),
+    VariableDefinition::VariableDefinition(std::shared_ptr<Token> type, std::shared_ptr<Base> variable, std::shared_ptr<Base> initialiser, Position pos) :
+        Base(Type::VariableDefinition, pos),
         m_type(type),
         m_variable(variable),
         m_initialiser(initialiser)
     {}
 
-    void Definition::print()
+    void VariableDefinition::print()
     {
         std::wcout<<m_type->name()<<L" ";
         m_variable->print();
@@ -150,12 +152,12 @@ namespace AST
         m_initialiser->print();
     }
 
-    Data Definition::execute(std::shared_ptr<VariableManager> varManager, Data d)
+    Data VariableDefinition::execute(std::shared_ptr<FunctionManager> fnManager, std::shared_ptr<VariableManager> varManager, Data d)
     {
         Data def;
         def.type = Data::Type::Definition;
-        m_variable->execute(varManager, def);
-        m_variable->execute(varManager, m_initialiser->execute(varManager));
+        m_variable->execute(fnManager, varManager, def);
+        m_variable->execute(fnManager, varManager, m_initialiser->execute(fnManager, varManager));
         return Data();
     }
 
@@ -175,9 +177,9 @@ namespace AST
         std::wcout<<L")";
     }
 
-    Data Assignment::execute(std::shared_ptr<VariableManager> varManager, Data d)
+    Data Assignment::execute(std::shared_ptr<FunctionManager> fnManager, std::shared_ptr<VariableManager> varManager, Data d)
     {
-        return m_left->execute(varManager, m_right->execute(varManager));
+        return m_left->execute(fnManager, varManager, m_right->execute(fnManager, varManager));
     }
 
     Variable::Variable(std::shared_ptr<Token>(token), Position pos) :
@@ -191,7 +193,7 @@ namespace AST
         std::wcout<<L"var: "<<m_token->value();
     }
 
-    Data Variable::execute(std::shared_ptr<VariableManager> varManager, Data d)
+    Data Variable::execute(std::shared_ptr<FunctionManager> fnManager, std::shared_ptr<VariableManager> varManager, Data d)
     {
         if (d.type == Data::Type::Void)
         {
@@ -220,7 +222,7 @@ namespace AST
         std::wcout<<m_token->value();
     }
 
-    Data Number::execute(std::shared_ptr<VariableManager> varManager, Data d)
+    Data Number::execute(std::shared_ptr<FunctionManager> fnManager, std::shared_ptr<VariableManager> varManager, Data d)
     {
         Data val;
         val.type = Data::Type::Number;
