@@ -9,20 +9,39 @@
 
 #include "Exceptions.h"
 
+namespace AST
+{
+    struct Data;
+}
+
+enum class DataType
+{
+    Quantity,
+    Number,
+    Boolean,
+    String,
+    Character,
+    List,
+    Void
+};
+
+static const std::wstring DataTypeStr[] =
+{
+    L"quantity",
+    L"number",
+    L"bool",
+    L"String",
+    L"char",
+    L"List",
+    L"void"
+};
+
 class VariableManager
 {
 public:
     struct Variable
     {
-        enum class Type
-        {
-//            Quantity,
-            Number,
-//            Boolean,
-//            String,
-//            Character,
-//            List
-        } type;
+        DataType type;
 
         std::wstring name;
 
@@ -89,8 +108,9 @@ private:
     std::shared_ptr<Scope> m_scope;
 
 public:
-    bool create(std::wstring name, Variable::Type t = Variable::Type::Number);
+    bool create(std::wstring name, DataType t = DataType::Number);
     bool assign(std::wstring name, const double value);
+    bool assign(std::wstring name, AST::Data value);
     bool value(std::wstring name, double& value);
 /*    bool create(std::wstring name, Number value);
     bool create(std::wstring name, Quantity value);
@@ -115,7 +135,7 @@ public:
 */
     bool defined(std::wstring name) const;
 
-    Variable::Type type(std::wstring name) const;
+    DataType type(std::wstring name) const;
 
     void enterScope();
 

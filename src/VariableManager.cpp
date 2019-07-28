@@ -2,10 +2,13 @@
 
 #include <iostream>
 
-bool VariableManager::create(std::wstring name, Variable::Type t)
+#include "AST.h"
+
+bool VariableManager::create(std::wstring name, DataType t)
 {
     if (!m_scope)
     {
+        throw NoScope();
         return false;
     }
     if (defined(name))
@@ -21,10 +24,34 @@ bool VariableManager::create(std::wstring name, Variable::Type t)
     return m_scope->insert(v);
 }
 
+bool VariableManager::assign(std::wstring name, AST::Data value)
+{
+    if (!m_scope)
+    {
+        throw NoScope();
+        return false;
+    }
+    std::shared_ptr<Variable> var = m_scope->variable(name);
+    if (!var)
+    {
+        throw VariableUndefined(name);
+    }
+    if (var->type != value.type)
+    {
+        return false;
+    }
+
+    var->t_number = value.t_number;
+
+    std::wcout<<"assigned value"<<std::to_wstring(value.t_number)<<" to Variable "<<name<<"\n";
+    return true;
+}
+    
 bool VariableManager::assign(std::wstring name, double value)
 {
     if (!m_scope)
     {
+        throw NoScope();
         return false;
     }
     std::shared_ptr<Variable> var = m_scope->variable(name);
@@ -43,12 +70,13 @@ bool VariableManager::defined(std::wstring name) const
 {
     if (!m_scope)
     {
+        throw NoScope();
         return false;
     }
     return m_scope->defined(name);
 }
 
-VariableManager::Variable::Type VariableManager::type(std::wstring name) const
+DataType VariableManager::type(std::wstring name) const
 {
     return (m_scope->variable(name))->type;
 }
@@ -57,6 +85,7 @@ bool VariableManager::value(std::wstring name, double& value)
 {
     if (!m_scope)
     {
+        throw NoScope();
         return false;
     }
     std::shared_ptr<Variable> var = m_scope->variable(name);
@@ -64,7 +93,7 @@ bool VariableManager::value(std::wstring name, double& value)
     {
         return false;
     }
-    if (var->type != Variable::Type::Number)
+    if (var->type != DataType::Number)
     {
         return false;
     }

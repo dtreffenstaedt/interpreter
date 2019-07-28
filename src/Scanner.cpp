@@ -228,7 +228,7 @@ Token Scanner::nextToken()
         {
             if (buf == KeywordStr[i])
             {
-                return Token(p, (Token::Type) i);
+                return Token(p, (Token::Type) i, buf);
             }
         }
         return Token(p, Token::Type::Identifier, buf);

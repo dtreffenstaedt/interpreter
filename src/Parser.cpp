@@ -40,6 +40,12 @@ std::shared_ptr<AST::Base> Parser::statement()
     }
     else if ((*m_currentToken) == Token::Type::Identifier)
     {
+        if ((*peek()) == Token::Type::LParen)
+        {
+            std::shared_ptr<AST::Base> call = functionCall();
+            eat(Token::Type::Semicolon);
+            return call;
+        }
         std::shared_ptr<AST::Base> assign = assignment();
         eat(Token::Type::Semicolon);
         return assign;
@@ -49,10 +55,19 @@ std::shared_ptr<AST::Base> Parser::statement()
         (*m_currentToken) == Token::Type::KeywordNumber ||
         (*m_currentToken) == Token::Type::KeywordBool ||
         (*m_currentToken) == Token::Type::KeywordString ||
-        (*m_currentToken) == Token::Type::KeywordChar
-    )
+        (*m_currentToken) == Token::Type::KeywordList ||
+        (*m_currentToken) == Token::Type::KeywordChar ||
+        (*m_currentToken) == Token::Type::KeywordVoid)
     {
         return definition();
+    }
+    else if ((*m_currentToken) == Token::Type::KeywordReturn)
+    {
+        Position pos = m_currentToken->pos();
+        eat(Token::Type::KeywordReturn);
+        std::shared_ptr<AST::Base> statement = std::make_shared<AST::ReturnStatement>(expression(), pos);
+        eat(Token::Type::Semicolon);
+        return statement;
     }
     return std::make_shared<AST::Empty>(AST::Empty(m_currentToken->pos()));
 }
@@ -82,44 +97,72 @@ std::shared_ptr<AST::Base> Parser::definition(bool parameter)
     }
     std::shared_ptr<Token> name = m_currentToken;
     eat(Token::Type::Identifier);
-    if ((*m_currentToken) == Token::Type::OperatorAssign)
+    if ((*m_currentToken) == Token::Type::LParen)
     {
-        eat(Token::Type::OperatorAssign);
-        std::shared_ptr<AST::VariableDefinition> def = std::make_shared<AST::VariableDefinition>(AST::VariableDefinition(t, std::make_shared<AST::Variable>(AST::Variable(name, name->pos())), expression(), t->pos()));
-
-        eat(Token::Type::Semicolon);
-
-        return def;
-    }
-    else if ((*m_currentToken) == Token::Type::LParen)
-    {
-        if (parameter)
-        {
-            eat(Token::Type::Semicolon);
-        }
         eat(Token::Type::LParen);
         std::shared_ptr<AST::FunctionDefinition> def = std::make_shared<AST::FunctionDefinition>(AST::FunctionDefinition(t, name, t->pos()));
-        while ((*m_currentToken) >= Token::Type::KeywordQuantity && (*m_currentToken) <= Token::Type::KeywordList)
+        while (
+        (*m_currentToken) == Token::Type::KeywordQuantity ||
+        (*m_currentToken) == Token::Type::KeywordNumber ||
+        (*m_currentToken) == Token::Type::KeywordBool ||
+        (*m_currentToken) == Token::Type::KeywordString ||
+        (*m_currentToken) == Token::Type::KeywordList ||
+        (*m_currentToken) == Token::Type::KeywordChar ||
+        (*m_currentToken) == Token::Type::KeywordVoid)
         {
-            def->addParam(definition(true));
+            def->addParam(std::static_pointer_cast<AST::VariableDefinition>(definition(true)));
+            if ((*m_currentToken) == Token::Type::RParen)
+            {
+                break;
+            }
             eat(Token::Type::Comma);
         }
         eat(Token::Type::RParen);
         
-        eat(Token::Type::LBrace);
+        def->setImplementation(std::static_pointer_cast<AST::Compound>(compoundStatement()));
+/*        eat(Token::Type::LBrace);
         while ((*m_currentToken) != Token::Type::RBrace)
         {
+            std::wcout<<"ho\n";
             def->addStatement(statement());
         }
         eat(Token::Type::RBrace);
+*/
+        return def;
+    }
+    else if ((*m_currentToken) == Token::Type::OperatorAssign)
+    {
+        eat(Token::Type::OperatorAssign);
+        std::shared_ptr<AST::VariableDefinition> def = std::make_shared<AST::VariableDefinition>(
+            AST::VariableDefinition(t,
+                std::make_shared<AST::Variable>(AST::Variable(name, name->pos())),
+                expression(),
+                t->pos()
+            )
+        );
+
+        if (!parameter)
+        {
+            eat(Token::Type::Semicolon);
+        }
 
         return def;
     }
     else
     {
-        std::shared_ptr<AST::VariableDefinition> def = std::make_shared<AST::VariableDefinition>(AST::VariableDefinition(t, std::make_shared<AST::Variable>(AST::Variable(name, name->pos())), std::make_shared<AST::Empty>(AST::Empty(name->pos())), t->pos()));
+        std::shared_ptr<AST::VariableDefinition> def = std::make_shared<AST::VariableDefinition>(
+            AST::VariableDefinition(
+                t,
+                std::make_shared<AST::Variable>(AST::Variable(name, name->pos())),
+                std::make_shared<AST::Empty>(AST::Empty(name->pos())),
+                t->pos()
+            )
+        );
 
-        eat(Token::Type::Semicolon);
+        if (!parameter)
+        {
+            eat(Token::Type::Semicolon);
+        }
 
         return def;
     }
