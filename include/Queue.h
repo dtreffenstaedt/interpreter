@@ -56,6 +56,19 @@ public:
         }
     }
 
+    T peek()
+    {
+        std::lock_guard<std::mutex> guard(m_mutex);
+        if (first)
+        {
+            return first->value;
+        }
+        else
+        {
+            return T();
+        }
+    }
+
     bool empty()
     {
         return len == 0;
