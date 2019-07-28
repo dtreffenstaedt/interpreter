@@ -7,6 +7,8 @@
 #include "Token.h"
 #include "VariableManager.h"
 
+class FunctionManager;
+
 struct Data
 {
     enum class Type
@@ -40,7 +42,8 @@ namespace AST
             BinaryOperation,
             UnaryOperation,
             Compound,
-            Definition,
+            VariableDefinition,
+            FunnctionDefinition,
             Assignment,
             Variable,
             Number
@@ -49,7 +52,8 @@ namespace AST
         Position position;
 
         virtual void print() = 0;
-        virtual Data execute(std::shared_ptr<VariableManager>, Data d = Data()) = 0;
+        virtual Data execute(std::shared_ptr<FunctionManager> funManager, std::shared_ptr<VariableManager> varManager, Data d = Data()) = 0;
+
         explicit Base(Type t = Type::Empty, Position pos = {1,1}) :
             type(t)
         {}
@@ -62,7 +66,7 @@ namespace AST
 
         virtual void print();
 
-        virtual Data execute(std::shared_ptr<VariableManager> varManager, Data d);
+        virtual Data execute(std::shared_ptr<FunctionManager> funManager, std::shared_ptr<VariableManager> varManager, Data d);
     };
 
     class BinaryOperation : public Base
@@ -76,7 +80,7 @@ namespace AST
 
         virtual void print();
 
-        virtual Data execute(std::shared_ptr<VariableManager> varManager, Data d);
+        virtual Data execute(std::shared_ptr<FunctionManager> funManager, std::shared_ptr<VariableManager> varManager, Data d);
     };
 
     class UnaryOperation : public Base
@@ -89,7 +93,7 @@ namespace AST
 
         virtual void print();
 
-        virtual Data execute(std::shared_ptr<VariableManager> varManager, Data d);
+        virtual Data execute(std::shared_ptr<FunctionManager> funManager, std::shared_ptr<VariableManager> varManager, Data d);
     };
 
     class Compound : public Base
@@ -103,21 +107,61 @@ namespace AST
 
         virtual void print();
 
-        virtual Data execute(std::shared_ptr<VariableManager> varManager, Data d);
+        virtual Data execute(std::shared_ptr<FunctionManager> funManager, std::shared_ptr<VariableManager> varManager, Data d);
     };
 
-    class Definition : public Base
+    class FunctionCall : public Base
+    {
+    private:
+        std::shared_ptr<Token> m_token;
+        std::list<std::shared_ptr<Base> > m_parameters;
+
+    public:
+        FunctionCall(std::shared_ptr<Token> token, Position pos);
+
+        void addParam(std::shared_ptr<Base> parameter);
+
+        std::wstring signature();
+
+        virtual void print();
+
+        virtual Data execute(std::shared_ptr<FunctionManager> funManager, std::shared_ptr<VariableManager> varManager, Data d);
+    };
+
+    class FunctionDefinition : public Base
+    {
+    private:
+        std::shared_ptr<Token> m_type;
+        std::shared_ptr<Token> m_identifier;
+        std::list<std::shared_ptr<Base> > m_parameters;
+        std::list<std::shared_ptr<Base> > m_Statements;
+
+    public:
+        FunctionDefinition(std::shared_ptr<Token> type, std::shared_ptr<Token> identifier, Position pos);
+        
+        void addParam(std::shared_ptr<Base> parameter);
+
+        void addStatement(std::shared_ptr<Base> statement);
+        
+        std::wstring signature();
+
+        virtual void print();
+
+        virtual Data execute(std::shared_ptr<FunctionManager> funManager, std::shared_ptr<VariableManager> varManager, Data d);
+    };
+
+    class VariableDefinition : public Base
     {
     private:
         std::shared_ptr<Token> m_type;
         std::shared_ptr<Base> m_variable;
         std::shared_ptr<Base> m_initialiser;
     public:
-        Definition(std::shared_ptr<Token> type, std::shared_ptr<Base> variable, std::shared_ptr<Base> initialiser, Position pos);
+        VariableDefinition(std::shared_ptr<Token> type, std::shared_ptr<Base> variable, std::shared_ptr<Base> initialiser, Position pos);
 
         virtual void print();
 
-        virtual Data execute(std::shared_ptr<VariableManager> varManager, Data d);
+        virtual Data execute(std::shared_ptr<FunctionManager> funManager, std::shared_ptr<VariableManager> varManager, Data d);
     };
 
     class Assignment : public Base
@@ -131,7 +175,7 @@ namespace AST
 
         virtual void print();
 
-        virtual Data execute(std::shared_ptr<VariableManager> varManager, Data d);
+        virtual Data execute(std::shared_ptr<FunctionManager> funManager, std::shared_ptr<VariableManager> varManager, Data d);
     };
 
     class Variable : public Base
@@ -139,12 +183,13 @@ namespace AST
     private:
         std::shared_ptr<Token> m_token;
         std::wstring m_name;
+
     public:
-        Variable(std::shared_ptr<Token>(token), Position pos);
+        Variable(std::shared_ptr<Token> token, Position pos);
 
         virtual void print();
 
-        virtual Data execute(std::shared_ptr<VariableManager> varManager, Data d);
+        virtual Data execute(std::shared_ptr<FunctionManager> funManager, std::shared_ptr<VariableManager> varManager, Data d);
     };
 
     class Number : public Base
@@ -157,7 +202,7 @@ namespace AST
 
         virtual  void print();
 
-        virtual Data execute(std::shared_ptr<VariableManager> varManager, Data d);
+        virtual Data execute(std::shared_ptr<FunctionManager> funManager, std::shared_ptr<VariableManager> varManager, Data d);
     };
 }
 #endif // AST_H

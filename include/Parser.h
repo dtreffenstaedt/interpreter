@@ -49,6 +49,11 @@ private:
         m_currentToken = std::make_shared<Token>(m_buffer.get());
         readTokens();
     }
+    
+    inline std::shared_ptr<Token> peek()
+    {
+        return std::make_shared<Token>(m_buffer.peek());
+    }
 
     inline void eat(Token::Type tokenType)
     {
@@ -64,7 +69,11 @@ private:
 
     std::shared_ptr<AST::Base> statement();
 
-    std::shared_ptr<AST::Base> definition();
+    std::shared_ptr<AST::Base> functionCall();
+
+    std::shared_ptr<AST::Base> identifier();
+
+    std::shared_ptr<AST::Base> definition(bool parameter = false);
 
     std::shared_ptr<AST::Base> variable();
 
