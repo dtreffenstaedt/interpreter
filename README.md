@@ -19,3 +19,8 @@ Functions can have one of the Datatypes as return value, or void.
 Has the classical mathematical operators, and ^ for power.
 
 Currently thinking about how exactly to implement conditionals.
+
+
+How to install:
+
+git clone https://github.com/dtreffenstaedt/interpreter.git && cd interpreter && make
