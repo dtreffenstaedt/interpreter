@@ -11,7 +11,7 @@
 
 int main(int argc, char* argv[])
 {   
-    std::setlocale(LC_ALL, "en_US.UTF8");
+    std::setlocale(LC_ALL, "en_GB.UTF8");
     std::string file = "example.csc";
 
     if (argc == 2)
