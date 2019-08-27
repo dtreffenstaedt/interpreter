@@ -26,14 +26,16 @@ all: debug release
 
 release: CXXFLAGS += -O3
 release: TARGETFILES = $(BINDIR)/Release/$(TARGET)
+release: mkdir -p bin/Release
 release: executable
 
 debug: CXXFLAGS += -g -Og
 debug: TARGETFILES = $(BINDIR)/Debug/$(TARGET)
+debug: mkdir -p bin/Debug
 debug: executable
 
 executable: $(SOURCES)# $(HEADERS)
-	mkdir -p bin/Debug && mkdir -p bin/Release && $(CXX) $(CXXFLAGS) $(LDFLAGS) $(LIBRARIES) $(INCLUDE) $(SOURCES) -o $(TARGETFILES)
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) $(LIBRARIES) $(INCLUDE) $(SOURCES) -o $(TARGETFILES)
 
 clean:
 	rm -rf $(BINDIR)/* & m -rf $(DOCDIR)/*
