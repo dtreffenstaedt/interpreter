@@ -12,13 +12,17 @@
 int main(int argc, char* argv[])
 {   
     std::setlocale(LC_ALL, "en_US.UTF8");
-    std::string file = "abc.csc";
+    std::string file = "example.csc";
 
     if (argc == 2)
     {
         file = argv[1];
     }
-//    std::wcout<<"opening "<<file.c_str()<<"\n";
+    else
+    {
+        std::wcout<<"No filename specified. bye.\n";
+        return 0;
+    }
 
     Parser p(file.c_str());
 
