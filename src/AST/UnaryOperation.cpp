@@ -16,15 +16,17 @@ namespace AST
     Data UnaryOperation::execute(std::shared_ptr<FunctionManager> fnManager, std::shared_ptr<VariableManager> varManager, Data d)
     {
         Data val;
-        val.type = DataType::Number;
         if ((*m_token) == Token::Type::OperatorMinus)
         {
             Data expr = m_expression->execute(fnManager, varManager);
-            if (expr.type != DataType::Number)
+            val.type = expr.type;
+            if (expr.type != DataType::Integer && expr.type != DataType::Real)
             {
+                throw WrongType();
                 return Data();
             }
-            val.t_number = - expr.t_number;
+            val.t_int = - expr.t_int;
+            val.t_real = - expr.t_real;
             return val;
         }
         return m_expression->execute(fnManager, varManager);

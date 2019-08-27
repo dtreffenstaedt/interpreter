@@ -16,39 +16,85 @@ namespace AST
 
     Data BinaryOperation::execute(std::shared_ptr<FunctionManager> fnManager, std::shared_ptr<VariableManager> varManager, Data d)
     {
-        Data val;
-        val.type = DataType::Number;
-
         Data left = m_left->execute(fnManager, varManager);
         Data right = m_right->execute(fnManager, varManager);
-        if (left.type != DataType::Number || right.type != DataType::Number)
+
+        Data val;
+
+        if (((left.type == DataType::String || left.type == DataType::Character) && (right.type == DataType::String || right.type == DataType::Character)) && ((*m_token) == Token::Type::OperatorPlus))
         {
-            // TODO throw wrong operand Type.
+            val.type = DataType::String;
+
+            val.t_string = (left.type==DataType::String)?left.t_string:std::wstring(1, left.t_char);
+            val.t_string.append((right.type==DataType::String)?right.t_string:std::wstring(1, right.t_char));
+
+            return val;
+        }
+
+        val.type = left.type;
+        if ((left.type != DataType::Integer && left.type != DataType::Real) || (right.type != DataType::Integer && right.type != DataType::Real))
+        {
+            throw WrongType();
             return Data();
         }
         if ((*m_token) == Token::Type::OperatorMult)
         {
-            val.t_number = left.t_number * right.t_number;
+            if (left.type == DataType::Integer)
+            {
+                val.t_int = left.t_int * ((right.type==DataType::Integer)?right.t_int:right.t_real);
+            }
+            else
+            {
+                val.t_real = left.t_real * ((right.type==DataType::Integer)?right.t_int:right.t_real);
+            }
             return val;
         }
         if ((*m_token) == Token::Type::OperatorDiv)
         {
-            val.t_number = left.t_number / right.t_number;
+            if (left.type == DataType::Integer)
+            {
+                val.t_int = left.t_int / ((right.type==DataType::Integer)?right.t_int:right.t_real);
+            }
+            else
+            {
+                val.t_real = left.t_real / ((right.type==DataType::Integer)?right.t_int:right.t_real);
+            }
             return val;
         }
         if ((*m_token) == Token::Type::OperatorPlus)
         {
-            val.t_number = left.t_number + right.t_number;
+            if (left.type == DataType::Integer)
+            {
+                val.t_int = left.t_int + ((right.type==DataType::Integer)?right.t_int:right.t_real);
+            }
+            else
+            {
+                val.t_real = left.t_real + ((right.type==DataType::Integer)?right.t_int:right.t_real);
+            }
             return val;
         }
         if ((*m_token) == Token::Type::OperatorMinus)
         {
-            val.t_number = left.t_number - right.t_number;
+            if (left.type == DataType::Integer)
+            {
+                val.t_int = left.t_int - ((right.type==DataType::Integer)?right.t_int:right.t_real);
+            }
+            else
+            {
+                val.t_real = left.t_real - ((right.type==DataType::Integer)?right.t_int:right.t_real);
+            }
             return val;
         }
         if ((*m_token) == Token::Type::OperatorExp)
         {
-            val.t_number = pow(left.t_number, right.t_number);
+            if (left.type == DataType::Integer)
+            {
+                val.t_int = pow(left.t_int, ((right.type==DataType::Integer)?right.t_int:right.t_real));
+            }
+            else
+            {
+                val.t_real = pow(left.t_real, ((right.type==DataType::Integer)?right.t_int:right.t_real));
+            }
             return val;
         }
         return Data();

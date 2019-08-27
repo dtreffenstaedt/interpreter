@@ -18,7 +18,7 @@ int main(int argc, char* argv[])
     {
         file = argv[1];
     }
-    std::wcout<<"opening "<<file.c_str()<<"\n";
+//    std::wcout<<"opening "<<file.c_str()<<"\n";
 
     Parser p(file.c_str());
 

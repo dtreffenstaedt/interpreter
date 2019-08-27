@@ -26,7 +26,6 @@ namespace AST
             if ((*i)->type == Base::Type::ReturnStatement)
             {
                 ret = (*i)->execute(fnManager, varManager);
-                std::wcout<<"Returning\n";
                 break;
             }
             else

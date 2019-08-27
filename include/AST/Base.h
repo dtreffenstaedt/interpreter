@@ -19,14 +19,16 @@ namespace AST
         {
             Definition,
             Call,
+            Assign,
             Default
         } action = Action::Default;
 
     //        Quantity t_quantity;
-        double t_number = 0;
+        double t_real = 0;
+        double t_int = 0;
         std::wstring t_string;
-    //        char t_char;
-    //        bool t_bool;
+        wchar_t t_char;
+        bool t_bool;
     //        std::list<Variable> t_list;
     };
 
@@ -39,13 +41,18 @@ namespace AST
             BinaryOperation,
             UnaryOperation,
             ReturnStatement,
+            PrintStatement,
             Compound,
             VariableDefinition,
             FunctionDefinition,
             FunctionCall,
             Assignment,
             Variable,
-            Number
+            Real,
+            Integer,
+            String,
+            Character,
+            Boolean
         } type = Type::Empty;
 
         Position position;

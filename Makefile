@@ -5,7 +5,7 @@ LIBS =
 
 INCLUDEDIRS = include
 
-SOURCEFILES = main.cpp Scanner.cpp VariableManager.cpp Token.cpp Parser.cpp FunctionManager.cpp AST/Assignment.cpp AST/Compound.cpp AST/Number.cpp AST/Variable.cpp AST/Base.cpp AST/FunctionCall.cpp AST/ReturnStatement.cpp AST/VariableDefinition.cpp AST/BinaryOperation.cpp AST/FunctionDefinition.cpp AST/UnaryOperation.cpp
+SOURCEFILES = main.cpp Scanner.cpp VariableManager.cpp Token.cpp Parser.cpp FunctionManager.cpp AST/Assignment.cpp AST/Compound.cpp AST/Real.cpp AST/Integer.cpp AST/Variable.cpp AST/Base.cpp AST/FunctionCall.cpp AST/ReturnStatement.cpp AST/VariableDefinition.cpp AST/BinaryOperation.cpp AST/FunctionDefinition.cpp AST/UnaryOperation.cpp AST/String.cpp AST/Character.cpp AST/Boolean.cpp AST/PrintStatement.cpp
 #HEADERFILES = Token.h Scanner.h VariableManager.h Queue.h Timer.h Parser.h AST.h FunctionManager.h AST/Base.h AS
 SOURCEDIR = src
 HEADERDIR = include

@@ -17,22 +17,24 @@ namespace AST
 enum class DataType
 {
     Quantity,
-    Number,
+    Real,
+    Integer,
     Boolean,
     String,
-    Character,
     List,
+    Character,
     Void
 };
 
 static const std::wstring DataTypeStr[] =
 {
     L"quantity",
-    L"number",
+    L"real",
+    L"int",
     L"bool",
     L"String",
-    L"char",
     L"List",
+    L"char",
     L"void"
 };
 
@@ -46,10 +48,11 @@ public:
         std::wstring name;
 
 //        Quantity t_quantity;
-        double t_number;
-//        std::wstring t_string;
-//        char t_char;
-//        bool t_bool;
+        double t_real;
+        int64_t t_int;
+        std::wstring t_string;
+        wchar_t t_char;
+        bool t_bool;
 //        std::list<Variable> t_list;
     };
 
@@ -108,31 +111,10 @@ private:
     std::shared_ptr<Scope> m_scope;
 
 public:
-    bool create(std::wstring name, DataType t = DataType::Number);
-    bool assign(std::wstring name, const double value);
-    bool assign(std::wstring name, AST::Data value);
-    bool value(std::wstring name, double& value);
-/*    bool create(std::wstring name, Number value);
-    bool create(std::wstring name, Quantity value);
-    bool create(std::wstring name, bool value);
-    bool create(std::wstring name, wchar_t value);
-    bool create(std::wstring name, std::list<Variable> value);
-    bool create(std::wstring name, std::wstring value);
+    void create(std::wstring name, DataType t);
+    void assign(std::wstring name, AST::Data value);
+    AST::Data value(std::wstring name) const;
 
-    bool assign(std::wstring name, Number value);
-    bool assign(std::wstring name, Quantity value);
-    bool assign(std::wstring name, bool value);
-    bool assign(std::wstring name, wchar_t value);
-    bool assing(std::wstring name, std::list<Variable> value);
-    bool assing(std::wstring name, std::wstring value);
-
-    bool value(std::wstring name, Number& value);
-    bool value(std::wstring name, Quantity& value);
-    bool value(std::wstring name, bool& value);
-    bool value(std::wstring name, wchar_t& value);
-    bool value(std::wstring name, std::list<Variable>& value);
-    bool value(std::wstring name, std::wstring& value);
-*/
     bool defined(std::wstring name) const;
 
     DataType type(std::wstring name) const;

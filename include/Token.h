@@ -17,7 +17,8 @@ static const std::wstring TokenTypeStr[] =
     L"KeywordWhile",
     L"KeywordDo",
     L"KeywordQuantity",
-    L"KeywordNumber",
+    L"KeywordReal",
+    L"KeywordInteger",
     L"KeywordBool",
     L"KeywordString",
     L"KeywordList",
@@ -28,9 +29,10 @@ static const std::wstring TokenTypeStr[] =
     L"KeywordImport",
     L"KeywordExport",
     L"KeywordReturn",
-    L"KeywordAnd", // AND
-    L"KeywordOr", // OR
-    L"KeywordNot", // NOT
+    L"KeywordPrint",
+    L"OperatorAnd", // AND
+    L"OperatorOr", // OR
+    L"OperatorNot", // NOT
     L"String",  // alphanumerical text
     L"Character",
     L"Identifier",
@@ -65,14 +67,15 @@ static const std::wstring TokenTypeStr[] =
     L"OperatorIncrement", // ++
     L"OperatorDecrement", // --
     L"Comment", // //
-    L"Number", // numeric value
+    L"Real", // numeric value
+    L"Integer", // numeric value
     L"Unknown",
     L"UnexpectedEnd",
     L"Unexpected",
     L"End" // End of Input
 };
 
-static constexpr uint8_t KeywordStrLen = 19;
+static constexpr uint8_t KeywordStrLen = 22;
 
 static const std::wstring KeywordStr[] =
 {
@@ -82,17 +85,44 @@ static const std::wstring KeywordStr[] =
     L"while",
     L"do",
     L"quantity",
-    L"number",
+    L"real",
+    L"int",
     L"bool",
     L"String",
-    L"char",
     L"List",
+    L"char",
+    L"void",
     L"true",
     L"false",
     L"import",
     L"export",
-    L"void",
     L"return",
+    L"print",
+    L"AND",
+    L"OR",
+    L"NOT"
+};
+static const std::wstring KeywordStrAlt[] =
+{
+    L"if",
+    L"else",
+    L"for",
+    L"while",
+    L"do",
+    L"quantity",
+    L"ℝ",
+    L"ℤ",
+    L"bool",
+    L"String",
+    L"List",
+    L"char",
+    L"void",
+    L"true",
+    L"false",
+    L"import",
+    L"export",
+    L"return",
+    L"print",
     L"AND",
     L"OR",
     L"NOT"
@@ -109,7 +139,8 @@ public:
     KeywordWhile,
     KeywordDo,
     KeywordQuantity,
-    KeywordNumber,
+    KeywordReal,
+    KeywordInteger,
     KeywordBool,
     KeywordString,
     KeywordList,
@@ -120,9 +151,10 @@ public:
     KeywordImport,
     KeywordExport,
     KeywordReturn,
-    KeywordAnd, // AND
-    KeywordOr, // OR
-    KeywordNot, // NOT
+    KeywordPrint,
+    OperatorAnd, // AND
+    OperatorOr, // OR
+    OperatorNot, // NOT
     String,  // alphanumerical text
     Character,
     Identifier,
@@ -157,7 +189,8 @@ public:
     OperatorIncrement, // ++
     OperatorDecrement, // --
     Comment, // //
-    Number, // numeric value
+    Real, // numeric value
+    Integer, // numeric value
     Unknown,
     UnexpectedEnd,
     Unexpected,
@@ -178,7 +211,13 @@ public:
 
     std::wstring value() const;
 
-    double toNumber() const;
+    double toReal() const;
+
+    int64_t toInt() const;
+
+    char toCharacter() const;
+    
+    bool toBoolean() const;
 
     std::wstring name() const;
 

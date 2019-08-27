@@ -20,20 +20,17 @@ namespace AST
 
     Data Variable::execute(std::shared_ptr<FunctionManager> fnManager, std::shared_ptr<VariableManager> varManager, Data d)
     {
-        if (d.action == Data::Action::Default)
+        if (d.action == Data::Action::Assign)
         {
-            Data val;
-            val.type = DataType::Number;
-            varManager->value(m_name, val.t_number);
-            return val;
+            varManager->assign(m_name, d);
+            return Data();
         }
         else if (d.action == Data::Action::Definition)
         {
-            varManager->create(m_name);
+            varManager->create(m_name, d.type);
             return Data();
         }
-        varManager->assign(m_name, d.t_number);
-        return Data();
+        return varManager->value(m_name);
     }
 
 }

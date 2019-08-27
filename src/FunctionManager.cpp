@@ -20,7 +20,7 @@ void FunctionManager::create(std::wstring signature, std::shared_ptr<AST::Compou
     f->type = t;
     f->parameters = parameters;
     f->implementation = implementation;
-    std::wcout<<"created Function "<<signature<<"\n";
+//    std::wcout<<"created Function "<<signature<<"\n";
     m_scope->insert(f);
 }
 
@@ -38,7 +38,7 @@ AST::Data FunctionManager::execute(std::wstring name, std::shared_ptr<VariableMa
         params.push_back(d);
     }
 
-    std::wcout<<"executing Function "<<sig<<"\n";
+//    std::wcout<<"executing Function "<<sig<<"\n";
     if (!m_scope)
     {
         throw NoScope();
@@ -85,7 +85,7 @@ bool FunctionManager::defined(std::wstring signature) const
 
 void FunctionManager::enterScope()
 {
-    std::wcout<<"entering function scope\n";
+//    std::wcout<<"entering function scope\n";
     if (!m_scope)
     {
         m_scope = std::make_shared<Scope>(Scope());
@@ -99,7 +99,7 @@ void FunctionManager::enterScope()
 
 void FunctionManager::leaveScope()
 {
-    std::wcout<<"leaving function scope\n";
+//    std::wcout<<"leaving function scope\n";
     if (m_scope)
     {
         std::shared_ptr<Scope> s = m_scope;

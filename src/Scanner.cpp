@@ -188,22 +188,80 @@ Token Scanner::nextToken()
             if ((m_char) == '\\')
             {
                 nextChar();
-                buf += m_char;
+                switch (m_char)
+                {
+                case 't':
+                    buf += '\t';
+                    break;
+                case 'n':
+                    buf += '\n';
+                    break;
+                case 'r':
+                    buf += '\r';
+                    break;
+                case 'f':
+                    buf += '\f';
+                    break;
+                case 'a':
+                    buf += '\a';
+                    break;
+                case 'b':
+                    buf += '\b';
+                    break;
+                default:
+                    buf += m_char;
+                    break;
+                }
+                nextChar();
             }
             else if ((m_char) == '"')
             {
                 nextChar();
                 break;
             }
-            buf += m_char;
-            nextChar();
+            else
+            {
+                buf += m_char;
+                nextChar();
+            }
         }
         return Token(p, Token::Type::String, buf);
     }
     if ((m_char) == '\'')
     {
         nextChar();
-        buf = (m_char);
+        if ((m_char) == '\\')
+        {
+            nextChar();
+            switch (m_char)
+            {
+            case 't':
+                buf = '\t';
+                break;
+            case 'n':
+                buf = '\n';
+                break;
+            case 'r':
+                buf = '\r';
+                break;
+            case 'f':
+                buf = '\f';
+                break;
+            case 'a':
+                buf = '\a';
+                break;
+            case 'b':
+                buf = '\b';
+                break;
+            case '\'':
+                buf = '\'';
+                break;
+            }
+        }
+        else
+        {
+            buf = (m_char);
+        }
         nextChar();
         if ((m_char) != '\'')
         {
@@ -226,7 +284,7 @@ Token Scanner::nextToken()
         }
         for (int i = 0; i < KeywordStrLen; i++)
         {
-            if (buf == KeywordStr[i])
+            if (buf == KeywordStr[i] || buf == KeywordStrAlt[i])
             {
                 return Token(p, (Token::Type) i, buf);
             }
@@ -254,7 +312,14 @@ Token Scanner::nextToken()
             buf += (m_char);
             nextChar();
         }
-        return Token(p, Token::Type::Number, buf);
+        if (isFloat)
+        {
+            return Token(p, Token::Type::Real, buf);
+        }
+        else
+        {
+            return Token(p, Token::Type::Integer, buf);
+        }
     }
     buf = (m_char);
     nextChar();

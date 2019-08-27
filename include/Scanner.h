@@ -22,6 +22,7 @@ private:
 
 public:
     Scanner(const char *input);
+
     Token nextToken();
 
     inline bool atEnd()
@@ -93,6 +94,11 @@ private:
             m_pos.row++;
         }
         readCharacters();
+    }
+
+    inline wchar_t peek()
+    {
+        return m_buffer.peek();
     }
 };
 

@@ -52,7 +52,8 @@ std::shared_ptr<AST::Base> Parser::statement()
     }
     else if (
         (*m_currentToken) == Token::Type::KeywordQuantity ||
-        (*m_currentToken) == Token::Type::KeywordNumber ||
+        (*m_currentToken) == Token::Type::KeywordReal ||
+        (*m_currentToken) == Token::Type::KeywordInteger ||
         (*m_currentToken) == Token::Type::KeywordBool ||
         (*m_currentToken) == Token::Type::KeywordString ||
         (*m_currentToken) == Token::Type::KeywordList ||
@@ -69,6 +70,14 @@ std::shared_ptr<AST::Base> Parser::statement()
         eat(Token::Type::Semicolon);
         return statement;
     }
+    else if ((*m_currentToken) == Token::Type::KeywordPrint)
+    {
+        Position pos = m_currentToken->pos();
+        eat(Token::Type::KeywordPrint);
+        std::shared_ptr<AST::Base> statement = std::make_shared<AST::PrintStatement>(expression(), pos);
+        eat(Token::Type::Semicolon);
+        return statement;
+    }
     return std::make_shared<AST::Empty>(AST::Empty(m_currentToken->pos()));
 }
 
@@ -79,9 +88,13 @@ std::shared_ptr<AST::Base> Parser::definition(bool parameter)
     {
         eat(Token::Type::KeywordQuantity);
     }
-    if ((*m_currentToken) == Token::Type::KeywordNumber)
+    if ((*m_currentToken) == Token::Type::KeywordReal)
     {
-        eat(Token::Type::KeywordNumber);
+        eat(Token::Type::KeywordReal);
+    }
+    if ((*m_currentToken) == Token::Type::KeywordInteger)
+    {
+        eat(Token::Type::KeywordInteger);
     }
     if ((*m_currentToken) == Token::Type::KeywordBool)
     {
@@ -103,7 +116,8 @@ std::shared_ptr<AST::Base> Parser::definition(bool parameter)
         std::shared_ptr<AST::FunctionDefinition> def = std::make_shared<AST::FunctionDefinition>(AST::FunctionDefinition(t, name, t->pos()));
         while (
         (*m_currentToken) == Token::Type::KeywordQuantity ||
-        (*m_currentToken) == Token::Type::KeywordNumber ||
+        (*m_currentToken) == Token::Type::KeywordReal ||
+        (*m_currentToken) == Token::Type::KeywordInteger ||
         (*m_currentToken) == Token::Type::KeywordBool ||
         (*m_currentToken) == Token::Type::KeywordString ||
         (*m_currentToken) == Token::Type::KeywordList ||
@@ -120,21 +134,14 @@ std::shared_ptr<AST::Base> Parser::definition(bool parameter)
         eat(Token::Type::RParen);
         
         def->setImplementation(std::static_pointer_cast<AST::Compound>(compoundStatement()));
-/*        eat(Token::Type::LBrace);
-        while ((*m_currentToken) != Token::Type::RBrace)
-        {
-            std::wcout<<"ho\n";
-            def->addStatement(statement());
-        }
-        eat(Token::Type::RBrace);
-*/
         return def;
     }
     else if ((*m_currentToken) == Token::Type::OperatorAssign)
     {
         eat(Token::Type::OperatorAssign);
         std::shared_ptr<AST::VariableDefinition> def = std::make_shared<AST::VariableDefinition>(
-            AST::VariableDefinition(t,
+            AST::VariableDefinition(
+                t,
                 std::make_shared<AST::Variable>(AST::Variable(name, name->pos())),
                 expression(),
                 t->pos()
@@ -233,10 +240,15 @@ std::shared_ptr<AST::Base> Parser::factor()
 {
     std::shared_ptr<Token> f = m_currentToken;
 
-    if ((*f) == Token::Type::Number)
+    if ((*f) == Token::Type::Real)
     {
-        eat(Token::Type::Number);
-        return std::make_shared<AST::Number>(AST::Number(f, f->pos()));
+        eat(Token::Type::Real);
+        return std::make_shared<AST::Real>(AST::Real(f, f->pos()));
+    }
+    else if ((*f) == Token::Type::Integer)
+    {
+        eat(Token::Type::Integer);
+        return std::make_shared<AST::Integer>(AST::Integer(f, f->pos()));
     }
     else if ((*f) == Token::Type::OperatorPlus)
     {
@@ -275,6 +287,18 @@ std::shared_ptr<AST::Base> Parser::exponent()
 
 std::shared_ptr<AST::Base> Parser::term()
 {
+    if ((*m_currentToken) == Token::Type::String)
+    {
+        std::shared_ptr<AST::String> str = std::make_shared<AST::String>(AST::String(m_currentToken, m_currentToken->pos()));
+        eat(Token::Type::String);
+        return str;
+    }
+    if ((*m_currentToken) == Token::Type::Character)
+    {
+        std::shared_ptr<AST::Character> c = std::make_shared<AST::Character>(AST::Character(m_currentToken, m_currentToken->pos()));
+        eat(Token::Type::Character);
+        return c;
+    }
     std::shared_ptr<AST::Base> result = exponent();
 
     while ((*m_currentToken) == Token::Type::OperatorMult || (*m_currentToken) == Token::Type::OperatorDiv)
@@ -295,6 +319,18 @@ std::shared_ptr<AST::Base> Parser::term()
 
 std::shared_ptr<AST::Base> Parser::expression()
 {
+    if ((*m_currentToken) == Token::Type::KeywordTrue)
+    {
+        std::shared_ptr<AST::Boolean> b = std::make_shared<AST::Boolean>(AST::Boolean(m_currentToken, m_currentToken->pos()));
+        eat(Token::Type::KeywordTrue);
+        return b;
+    }
+    if ((*m_currentToken) == Token::Type::KeywordFalse)
+    {
+        std::shared_ptr<AST::Boolean> b = std::make_shared<AST::Boolean>(AST::Boolean(m_currentToken, m_currentToken->pos()));
+        eat(Token::Type::KeywordFalse);
+        return b;
+    }
     std::shared_ptr<AST::Base> result = term();
 
     while ((*m_currentToken) == Token::Type::OperatorPlus || (*m_currentToken) == Token::Type::OperatorMinus)

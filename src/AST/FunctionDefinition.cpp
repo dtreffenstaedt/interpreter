@@ -31,7 +31,8 @@ namespace AST
         {
             std::shared_ptr<VariableDefinition> v = std::static_pointer_cast<VariableDefinition>(*i);
             sig += L" ";
-            sig += v->type()->value();
+//            sig += v->type()->value();
+            sig += DataTypeStr[((int) v->type()->type())-5];
         }
         return sig;
     }

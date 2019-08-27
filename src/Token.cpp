@@ -1,5 +1,6 @@
 #include "Token.h"
 
+#include "Exceptions.h"
 
 Token::Token(Position pos, Token::Type t, std::wstring value) :
     m_type(std::move(t)),
@@ -22,9 +23,45 @@ std::wstring Token::value() const
     return m_value;
 }
 
-double Token::toNumber() const
+double Token::toReal() const
 {
+    if (m_type != Type::Real)
+    {
+        throw WrongType();
+    }
     return std::stod(m_value);
+}
+
+int64_t Token::toInt() const
+{
+    if (m_type != Type::Integer)
+    {
+        throw WrongType();
+    }
+    return std::stoll(m_value);
+}
+
+char Token::toCharacter() const
+{
+    if (m_type != Type::Character)
+    {
+        throw WrongType();
+    }
+    return m_value.c_str()[0];
+}
+
+bool Token::toBoolean() const
+{
+    if (m_type == Type::KeywordTrue)
+    {
+        return true;
+    }
+    if (m_type == Type::KeywordFalse)
+    {
+        return false;
+    }
+
+    throw WrongType();
 }
 
 std::wstring Token::name() const

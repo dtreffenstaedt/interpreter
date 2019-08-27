@@ -32,9 +32,34 @@ namespace AST
     Data VariableDefinition::execute(std::shared_ptr<FunctionManager> fnManager, std::shared_ptr<VariableManager> varManager, Data d)
     {
         Data def;
+        if ((*m_type) == Token::Type::KeywordReal)
+        {
+            def.type = DataType::Real;
+        }
+        else if ((*m_type) == Token::Type::KeywordInteger)
+        {
+            def.type = DataType::Integer;
+        }
+        else if ((*m_type) == Token::Type::KeywordString)
+        {
+            def.type = DataType::String;
+        }
+        else if ((*m_type) == Token::Type::KeywordChar)
+        {
+            def.type = DataType::Character;
+        }
+        else if ((*m_type) == Token::Type::KeywordBool)
+        {
+            def.type = DataType::Boolean;
+        }
         def.action = Data::Action::Definition;
         m_variable->execute(fnManager, varManager, def);
-        m_variable->execute(fnManager, varManager, m_initialiser->execute(fnManager, varManager));
+        if (m_initialiser->type != Type::Empty)
+        {
+            Data init = m_initialiser->execute(fnManager, varManager);
+            init.action = Data::Action::Assign;
+            m_variable->execute(fnManager, varManager, init);
+        }
         return Data();
     }
 
