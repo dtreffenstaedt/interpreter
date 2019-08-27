@@ -8,11 +8,11 @@ No dependencies, uses c++ 17 standard library.
 
 Has the dataypes:
 
-Real (represented by the keyword "real" or the UTF-8 character "ℝ")
-Integer (represented by the keyword "int" or the UTF-8 character "ℤ")
-Boolean (keyword "bool")
-String (keyword "String")
-Character (keyword "char")
+- Real (represented by the keyword "real" or the UTF-8 character "ℝ")
+- Integer (represented by the keyword "int" or the UTF-8 character "ℤ")
+- Boolean (keyword "bool")
+- String (keyword "String")
+- Character (keyword "char")
 
 Functions can have one of the Datatypes as return value, or void.
 
