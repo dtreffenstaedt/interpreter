@@ -33,7 +33,7 @@ debug: TARGETFILES = $(BINDIR)/Debug/$(TARGET)
 debug: executable
 
 executable: $(SOURCES)# $(HEADERS)
-	$(CXX) $(CXXFLAGS) $(LDFLAGS) $(LIBRARIES) $(INCLUDE) $(SOURCES) -o $(TARGETFILES)
+	mkdir -p bin/Debug && mkdir -p bin/Release && $(CXX) $(CXXFLAGS) $(LDFLAGS) $(LIBRARIES) $(INCLUDE) $(SOURCES) -o $(TARGETFILES)
 
 clean:
 	rm -rf $(BINDIR)/* & m -rf $(DOCDIR)/*
